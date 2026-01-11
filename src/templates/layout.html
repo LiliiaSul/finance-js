@@ -1,0 +1,162 @@
+<div class="d-flex">
+    <!-- Mobile icon (видна только < md) -->
+    <div class="d-md-none">
+        <div class="d-flex align-items-center justify-content-between p-2">
+            <nav class="navbar navbar-light">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar"
+                        aria-controls="mobileSidebar" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Desktop sidebar (виден только >= md) -->
+    <div class="d-none d-md-flex flex-column vh-100 flex-shrink-0 p-3 border-end" style="width: 230px;">
+        <a href="javascript:void(0);" class="navbar-brand">
+            <img src="/images/Logo.png" alt="Logo">
+        </a>
+        <hr>
+        <div class="mb-auto">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a href="/" class="nav-link active d-flex align-items-center layout-text-color" aria-current="page">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-house me-2" viewBox="0 0 16 16">
+                            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                        </svg>
+                        Главная
+                    </a>
+                </li>
+                <li>
+                    <a href="/incomes-expenses" class="nav-link layout-text-color">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-cash-coin" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                  d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+                            <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+                            <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+                            <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+                        </svg>
+                        Доходы & Расходы
+                    </a>
+                </li>
+            </ul>
+            <div class="accordion" id="accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed layout-text-color" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false"
+                                aria-controls="collapseOne">
+                            Категории
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion">
+                        <div class="accordion-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="/incomes" class="text-decoration-none">Доходы</a></li>
+                                <li><a href="/expenses" class="text-decoration-none">Расходы</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-3">
+            Баланс: <span class="text-primary">500$</span>
+        </div>
+        <hr>
+        <div class="dropdown p-3">
+            <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+               id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="/images/user.png" alt="user" width="32" height="32" class="rounded-circle me-2">
+                Roman Chernov
+            </a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser" style="">
+                <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- Mobile sidebar (offcanvas, виден только < md) -->
+    <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar"
+         aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <a href="/" class="navbar-brand d-block mb-3">
+                <img src="/images/Logo.png" alt="Logo" style="max-width: 160px; height: auto;">
+            </a>
+
+            <div class="mb-auto">
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link active d-flex align-items-center layout-text-color"
+                           aria-current="page" data-bs-dismiss="offcanvas">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-house me-2" viewBox="0 0 16 16">
+                                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                            </svg>
+                            Главная
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/incomes-expenses" class="nav-link layout-text-color" data-bs-dismiss="offcanvas">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-cash-coin" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                      d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+                                <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+                                <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+                                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+                            </svg>
+                            Доходы & Расходы
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="accordion mt-3" id="accordionMobile">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed layout-text-color" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapseMobileOne" aria-expanded="false"
+                                    aria-controls="collapseMobileOne">
+                                Категории
+                            </button>
+                        </h2>
+                        <div id="collapseMobileOne" class="accordion-collapse collapse"
+                             data-bs-parent="#accordionMobile">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><a href="/incomes" class="text-decoration-none"
+                                                        data-bs-dismiss="offcanvas">Доходы</a></li>
+                                    <li><a href="/expenses" class="text-decoration-none" data-bs-dismiss="offcanvas">Расходы</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3">
+                Баланс: <span class="text-primary">500$</span>
+            </div>
+            <hr>
+            <div class="dropdown pt-2">
+                <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+                   id="dropdownUserMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/images/user.png" alt="user" width="32" height="32" class="rounded-circle me-2">
+                    Roman Chernov
+                </a>
+                <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUserMobile">
+                    <li><a class="dropdown-item" href="/logout" data-bs-dismiss="offcanvas">Выйти</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="content-layout" class="flex-grow-1 p-2 p-md-5"></div>
+</div>

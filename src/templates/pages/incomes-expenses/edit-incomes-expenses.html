@@ -1,0 +1,42 @@
+<div class="container">
+    <h1 class="pb-4">Редактирование дохода/расхода</h1>
+    <form class="col-12 col-sm-4 d-flex flex-column gap-2">
+        <div>
+            <select class="form-select" required>
+                <option selected disabled>Тип...</option>
+                <option value="income">доход</option>
+                <option value="expense">расход</option>
+            </select>
+            <div class="invalid-feedback">Выберите тип</div>
+        </div>
+
+        <div>
+            <select class="form-select" required>
+                <option selected disabled>Категория...</option>
+                <option value="income">доходы</option>
+                <option value="expense">расходы</option>
+            </select>
+            <div class="invalid-feedback">Выберите категорию</div>
+        </div>
+
+        <div>
+            <input type="number" placeholder="Сумма в $..." class="form-control" required>
+            <div class="invalid-feedback">Заполните сумму</div>
+        </div>
+
+        <div>
+            <input type="date" placeholder="Дата..." class="form-control" required>
+            <div class="invalid-feedback">Заполните дату</div>
+        </div>
+
+        <div>
+            <input type="text" placeholder="Комментарий..." class="form-control" required>
+            <div class="invalid-feedback">Заполните комментарий</div>
+        </div>
+
+        <div class="d-grid gap-2 d-sm-flex pt-2">
+            <button class="btn btn-success" id="create">Создать</button>
+            <button class="btn btn-danger" id="cancel">Отмена</button>
+        </div>
+    </form>
+</div>

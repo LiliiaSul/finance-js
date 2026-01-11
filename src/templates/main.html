@@ -1,0 +1,35 @@
+<div class="container">
+    <h1 class="mb-3 mb-md-5">Главная</h1>
+
+    <div class="d-flex flex-wrap gap-2 gap-md-3 align-items-center mb-4 mb-md-5">
+        <button class="btn btn-outline-secondary btn-sm active" type="button">Сегодня</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Неделя</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Месяц</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Год</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Все</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button">Интервал</button>
+
+        <div class="input-group input-group-sm w-auto">
+            <span class="input-group-text">с</span>
+            <label for="start" class="visually-hidden">Дата начала</label>
+            <input class="form-control" type="date" id="start">
+        </div>
+
+        <div class="input-group input-group-sm w-auto">
+            <span class="input-group-text">по</span>
+            <label for="end" class="visually-hidden">Дата окончания</label>
+            <input class="form-control" type="date" id="end">
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6 border-lg-end">
+            <canvas id="incomeChart"></canvas>
+        </div>
+        <div class="col-12 col-lg-6">
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+</div>
+
+
