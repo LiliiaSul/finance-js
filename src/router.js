@@ -11,6 +11,7 @@ import {IncomesExpenses} from "./components/incomes-expenses/incomes-expenses";
 import {CreateIncomesExpenses} from "./components/incomes-expenses/create-incomes-expenses";
 import {EditIncomesExpenses} from "./components/incomes-expenses/edit-incomes-expenses";
 import {Logout} from "./components/auth/logout";
+import {AuthUtils} from "./utils/auth-utils";
 
 export class Router {
     constructor() {
@@ -34,7 +35,7 @@ export class Router {
                 template: '/templates/pages/auth/login.html',
                 useLayout: false,
                 load: () => {
-                    new Login();
+                    new Login(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -43,13 +44,13 @@ export class Router {
                 template: '/templates/pages/auth/sign-up.html',
                 useLayout: false,
                 load: () => {
-                    new SignUp();
+                    new SignUp(this.openNewRoute.bind(this));
                 }
             },
             {
                 route: '/logout',
                 load: () => {
-                    new Logout();
+                    new Logout(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -139,10 +140,44 @@ export class Router {
     initEvents() {
         window.addEventListener('DOMContentLoaded', this.activateRoute.bind(this));
         window.addEventListener('popstate', this.activateRoute.bind(this));
+        document.addEventListener('click', this.clickHandler.bind(this)); //отслеживаем клики по всему документу
+
+    }
+
+    async openNewRoute(url) { //открываем новую страницу
+        history.pushState({}, '', url); //обновление url адреса в браузере
+        await this.activateRoute();
+    }
+
+    async clickHandler(event) { //обработка клика по ссылке
+        let element = null;
+        if (event.target.nodeName === 'A') {
+            element = event.target;
+        } else if (event.target.parentNode.nodeName === 'A') { //если кликнули на вложенный элемент внутри ссылки
+            element = event.target.parentNode;
+        }
+
+        if (element) { //если кликнули по ссылке
+            event.preventDefault(); //отменяем стандартное поведение ссылки
+
+            const url = element.href.replace(window.location.origin, ''); //получаем только путь без домена
+            if (!url || url === '/#' || url.startsWith('javascript:void(0)')) { //если ссылка состоит из # или пустая
+                return;
+            }
+
+            await this.openNewRoute(url);
+        }
     }
 
     async activateRoute() {
         const urlRoute = window.location.pathname;
+
+        const isAuthRoute = urlRoute === '/login' || urlRoute === '/sign-up';
+
+        if (!AuthUtils.getTokens('accessToken') && !isAuthRoute) { //если пользователь не авторизован
+            return this.openNewRoute('/login');
+        }
+
         const currentRoute = this.routes.find(item => item.route === urlRoute);
 
         if (currentRoute) {
@@ -164,8 +199,9 @@ export class Router {
             }
 
         } else {
-            window.location = '/';
+            console.log('No found route');
+            history.pushState({}, '', '/'); //перенаправление на главную страницу
+            await this.activateRoute();
         }
-
     }
 }
