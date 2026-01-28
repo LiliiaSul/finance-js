@@ -1,125 +1,142 @@
-<div class="container">
+<div class="container-fluid">
     <h1 class="mb-3 mb-md-5">Расходы</h1>
 
-    <div class="row g-3">
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Еда</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="row g-3" id="expenses-list">
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Еда</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Жильё</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Жильё</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Здоровье</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Здоровье</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Кафе</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Кафе</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Авто</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Авто</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Одежда</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Одежда</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Развлечения</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Развлечения</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Счета</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Счета</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Спорт</h5>
-                    <div class="d-grid gap-2 d-sm-flex">
-                        <button class="btn btn-primary">Редактировать</button>
-                        <button class="btn btn-danger">Удалить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <div class="card h-100">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">Спорт</h5>-->
+<!--                    <div class="d-grid gap-2 d-sm-flex">-->
+<!--                        <button class="btn btn-primary">Редактировать</button>-->
+<!--                        <button class="btn btn-danger">Удалить</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
-        <div class="col-12 col-sm-6 col-lg-4">
-            <a href="/create-expenses" class="text-decoration-none">
-                <div class="card h-100 border border-secondary-subtle">
-                    <div class="card-body d-flex align-items-center justify-content-center py-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="33" fill="#CED4DA" class="bi bi-plus" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                    </div>
-                </div>
-            </a>
+<!--        <div class="col-12 col-sm-6 col-lg-4">-->
+<!--            <a href="/create-expenses" class="text-decoration-none">-->
+<!--                <div class="card h-100 border border-secondary-subtle">-->
+<!--                    <div class="card-body d-flex align-items-center justify-content-center py-5">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="33" fill="#CED4DA" class="bi bi-plus"-->
+<!--                             viewBox="0 0 16 16">-->
+<!--                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>-->
+<!--                        </svg>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </a>-->
+<!--        </div>-->
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5 text-center" id="deleteModalLabel">Вы действительно хотите удалить категорию?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer border-top-0 justify-content-center">
+                <button type="button" class="btn btn-success"  id="deleteButton">Да, удалить</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Не удалять</button>
+            </div>
         </div>
     </div>
 </div>

@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container-fluid">
     <h1 class="pb-4">Создание дохода/расхода</h1>
     <form class="col-12 col-sm-4 d-flex flex-column gap-2">
         <div>
             <select class="form-select" id="type" required>
-                <option selected disabled value="">Тип...</option>
+                <option selected value="">Тип...</option>
                 <option value="income">доход</option>
                 <option value="expense">расход</option>
             </select>
@@ -11,11 +11,7 @@
         </div>
 
         <div>
-            <select class="form-select" id="category" required>
-                <option selected disabled value="">Категория...</option>
-                <option value="income">доходы</option>
-                <option value="expense">расходы</option>
-            </select>
+            <select class="form-select" id="category" required></select>
             <div class="invalid-feedback">Выберите категорию</div>
         </div>
 
@@ -30,7 +26,7 @@
         </div>
 
        <div>
-           <input type="text" placeholder="Комментарий..." class="form-control" id="commet" required>
+           <input type="text" placeholder="Комментарий..." class="form-control" id="comment" required>
            <div class="invalid-feedback">Заполните комментарий</div>
        </div>
 

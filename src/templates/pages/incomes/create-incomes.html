@@ -1,15 +1,17 @@
-<div class="container">
+<div class="container-fluid">
     <h1 class="mb-3 mb-md-5">Создание категории доходов</h1>
 
     <div class="col-12 col-lg-4 mb-2">
-        <div class="input-group">
-            <label for="create-incomes" class="visually-hidden">Название категории</label>
-            <input type="text" class="form-control rounded" placeholder="Название..." id="create-incomes">
-            <div class="invalid-feedback">Заполните название категории</div>
-        </div>
-        <div class="d-grid gap-2 d-sm-flex pt-4">
-            <button class="btn btn-success" id="create">Создать</button>
-            <button class="btn btn-danger" id="cancel">Отмена</button>
-        </div>
+        <form>
+            <div class="input-group">
+                <label for="incomes-title" class="visually-hidden">Название категории</label>
+                <input type="text" class="form-control rounded" placeholder="Название..." id="incomes-title">
+                <div class="invalid-feedback">Заполните название категории</div>
+            </div>
+            <div class="d-grid gap-2 d-sm-flex pt-4">
+                <button class="btn btn-success" id="create" type="button">Создать</button>
+                <button class="btn btn-danger" id="cancel" type="button">Отмена</button>
+            </div>
+        </form>
     </div>
 </div>

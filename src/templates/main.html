@@ -1,24 +1,24 @@
-<div class="container">
+<div class="container-fluid">
     <h1 class="mb-3 mb-md-5">Главная</h1>
 
-    <div class="d-flex flex-wrap gap-2 gap-md-3 align-items-center mb-4 mb-md-5">
-        <button class="btn btn-outline-secondary btn-sm active" type="button">Сегодня</button>
-        <button class="btn btn-outline-secondary btn-sm" type="button">Неделя</button>
-        <button class="btn btn-outline-secondary btn-sm" type="button">Месяц</button>
-        <button class="btn btn-outline-secondary btn-sm" type="button">Год</button>
-        <button class="btn btn-outline-secondary btn-sm" type="button">Все</button>
-        <button class="btn btn-outline-secondary btn-sm" type="button">Интервал</button>
+    <div class="d-flex flex-wrap gap-2 gap-md-3 align-items-center mb-4 mb-md-5 btn-date-filters">
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="today">Сегодня</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="week">Неделя</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="month">Месяц</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="year">Год</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="all">Все</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" id="interval">Интервал</button>
 
         <div class="input-group input-group-sm w-auto">
             <span class="input-group-text">с</span>
-            <label for="start" class="visually-hidden">Дата начала</label>
-            <input class="form-control" type="date" id="start">
+            <label for="dateFrom" class="visually-hidden">Дата начала</label>
+            <input class="form-control" type="date" id="dateFrom">
         </div>
 
         <div class="input-group input-group-sm w-auto">
             <span class="input-group-text">по</span>
-            <label for="end" class="visually-hidden">Дата окончания</label>
-            <input class="form-control" type="date" id="end">
+            <label for="dateTo" class="visually-hidden">Дата окончания</label>
+            <input class="form-control" type="date" id="dateTo">
         </div>
     </div>
 
