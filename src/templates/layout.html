@@ -16,11 +16,11 @@
         <a href="javascript:void(0);" class="navbar-brand">
             <img src="/images/Logo.png" alt="Logo">
         </a>
-        <hr>
+        <hr class="sidebar-hr">
         <div class="mb-auto">
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item">
-                    <a href="/" class="nav-link active d-flex align-items-center layout-text-color" aria-current="page">
+                    <a href="/" class="nav-link d-flex align-items-center layout-text-color" aria-current="page">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-house me-2" viewBox="0 0 16 16">
                             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
@@ -63,14 +63,14 @@
             </div>
         </div>
         <div class="p-3">
-            Баланс: <span class="text-primary">500$</span>
+            Баланс: <span class="text-primary" id="balance"></span>
         </div>
-        <hr>
+        <hr class="sidebar-hr">
         <div class="dropdown p-3">
             <a href="javascript:void(0);" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="/images/user.png" alt="user" width="32" height="32" class="rounded-circle me-2">
-                Roman Chernov
+                <span id="user-name" class="text-wrap"></span>
             </a>
             <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser" style="">
                 <li><a class="dropdown-item" href="/logout">Выйти</a></li>
@@ -93,7 +93,7 @@
             <div class="mb-auto">
                 <ul class="nav nav-pills flex-column">
                     <li class="nav-item">
-                        <a href="/" class="nav-link active d-flex align-items-center layout-text-color"
+                        <a href="/" class="nav-link d-flex align-items-center layout-text-color"
                            aria-current="page" data-bs-dismiss="offcanvas">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  class="bi bi-house me-2" viewBox="0 0 16 16">
@@ -142,14 +142,13 @@
             </div>
 
             <div class="pt-3">
-                Баланс: <span class="text-primary">500$</span>
+                Баланс: <span class="text-primary"></span>
             </div>
-            <hr>
+            <hr class="sidebar-hr">
             <div class="dropdown pt-2">
                 <a href="javascript:void(0);" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                    id="dropdownUserMobile" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="/images/user.png" alt="user" width="32" height="32" class="rounded-circle me-2">
-                    Roman Chernov
                 </a>
                 <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUserMobile">
                     <li><a class="dropdown-item" href="/logout" data-bs-dismiss="offcanvas">Выйти</a></li>

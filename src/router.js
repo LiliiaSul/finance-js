@@ -12,6 +12,7 @@ import {CreateIncomesExpenses} from "./components/incomes-expenses/create-income
 import {EditIncomesExpenses} from "./components/incomes-expenses/edit-incomes-expenses";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
+import {HttpUtils} from "./utils/http-utils";
 
 export class Router {
     constructor() {
@@ -26,7 +27,7 @@ export class Router {
                 template: '/templates/main.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Main();
+                    new Main(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -59,7 +60,7 @@ export class Router {
                 template: '/templates/pages/incomes/incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Incomes();
+                    new Incomes(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -68,7 +69,7 @@ export class Router {
                 template: '/templates/pages/incomes/create-incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateIncomes();
+                    new CreateIncomes(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -77,7 +78,7 @@ export class Router {
                 template: '/templates/pages/incomes/edit-incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditIncomes();
+                    new EditIncomes(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -86,7 +87,7 @@ export class Router {
                 template: '/templates/pages/expenses/expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Expenses();
+                    new Expenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -95,7 +96,7 @@ export class Router {
                 template: '/templates/pages/expenses/create-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateExpenses();
+                    new CreateExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -104,7 +105,7 @@ export class Router {
                 template: '/templates/pages/expenses/edit-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditExpenses();
+                    new EditExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -113,7 +114,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomesExpenses();
+                    new IncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -122,7 +123,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/create-incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateIncomesExpenses();
+                    new CreateIncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -131,7 +132,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/edit-incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditIncomesExpenses();
+                    new EditIncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
         ];
@@ -192,16 +193,58 @@ export class Router {
                     contentBlock = document.getElementById('content-layout');
                 }
                 contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
+
+                this.balanceElement = document.getElementById('balance');
+                if (this.balanceElement) {
+                    const balanceData = await this.getBalance();
+                    if (balanceData && typeof balanceData.balance !== 'undefined') {
+                        this.balanceElement.innerText = balanceData.balance + '$';
+                    } else {
+                        // если не удалось получить баланс пользователя, очищаем поле баланса
+                        this.balanceElement.innerText = '';
+                    }
+                }
+
+                this.userNameElement = document.getElementById('user-name');
+                const userInfo = AuthUtils.getUser();
+                if (userInfo) {
+                    this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
+                }
+
+                this.activateMenuItem(currentRoute);
             }
 
             if (currentRoute.load && typeof currentRoute.load === 'function') {
                 currentRoute.load();
             }
 
-        } else {
-            console.log('No found route');
-            history.pushState({}, '', '/'); //перенаправление на главную страницу
-            await this.activateRoute();
+
         }
+    }
+
+    async getBalance() {
+        const result = await HttpUtils.request('/balance');
+        if (result.redirect) { // если нужно перенаправление
+            await this.openNewRoute(result.redirect);
+            return null;
+        }
+
+        if (result.error || !result.response || (result.response && result.response.error)) {
+            alert('Возникла ошибка при получении баланса. Обратитесь в поддержку.');
+            return null;
+        }
+
+        return result.response;
+    }
+
+    activateMenuItem(route) {
+        document.querySelectorAll('.nav .nav-link').forEach(item => {
+            const href = item.getAttribute('href');
+            if ((route.route.includes(href) && href !== '/') || (route.route === '/' && href === '/')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
     }
 }
