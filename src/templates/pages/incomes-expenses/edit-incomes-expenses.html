@@ -1,42 +1,38 @@
-<div class="container">
+<div class="container-fluid">
     <h1 class="pb-4">Редактирование дохода/расхода</h1>
     <form class="col-12 col-sm-4 d-flex flex-column gap-2">
         <div>
-            <select class="form-select" required>
-                <option selected disabled>Тип...</option>
-                <option value="income">доход</option>
-                <option value="expense">расход</option>
+            <select class="form-select" id="type" required>
+                <option selected value="" disabled>Тип...</option>
+                <option value="income" disabled>доход</option>
+                <option value="expense" disabled>расход</option>
             </select>
             <div class="invalid-feedback">Выберите тип</div>
         </div>
 
         <div>
-            <select class="form-select" required>
-                <option selected disabled>Категория...</option>
-                <option value="income">доходы</option>
-                <option value="expense">расходы</option>
-            </select>
+            <select class="form-select" id="category" required></select>
             <div class="invalid-feedback">Выберите категорию</div>
         </div>
 
         <div>
-            <input type="number" placeholder="Сумма в $..." class="form-control" required>
+            <input type="number" placeholder="Сумма в $..." class="form-control" id="amount" required>
             <div class="invalid-feedback">Заполните сумму</div>
         </div>
 
         <div>
-            <input type="date" placeholder="Дата..." class="form-control" required>
+            <input type="date" placeholder="Дата..." class="form-control" id="date" required>
             <div class="invalid-feedback">Заполните дату</div>
         </div>
 
         <div>
-            <input type="text" placeholder="Комментарий..." class="form-control" required>
+            <input type="text" placeholder="Комментарий..." class="form-control" id="comment" required>
             <div class="invalid-feedback">Заполните комментарий</div>
         </div>
 
         <div class="d-grid gap-2 d-sm-flex pt-2">
-            <button class="btn btn-success" id="create">Создать</button>
-            <button class="btn btn-danger" id="cancel">Отмена</button>
+            <button class="btn btn-success" id="update" type="button">Сохранить</button>
+            <button class="btn btn-danger" id="cancel" type="button">Отмена</button>
         </div>
     </form>
 </div>

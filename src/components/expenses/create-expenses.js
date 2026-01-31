@@ -1,35 +1,37 @@
+import {HttpUtils} from "../../utils/http-utils";
+import {ValidationUtils} from "../../utils/validation-utils";
+
 export class CreateExpenses {
-    constructor() {
-        this.createBtn = document.getElementById('create');
-        this.cancelBtn = document.getElementById('cancel');
-        this.inputCreateElement = document.getElementById('create-expenses');
+    constructor(openNewRoute) {
+        this.openNewRoute = openNewRoute;
+        document.getElementById('create').addEventListener('click', this.createExpenses.bind(this));
+        document.getElementById('cancel').addEventListener('click', () => {
+            this.openNewRoute('/expenses');
+        })
 
-        this.createBtn.addEventListener('click', this.createExpenses.bind(this));
-        this.cancelBtn.addEventListener('click', this.cancelExpenses.bind(this));
+        this.expensesTitleElement = document.getElementById('expenses-title');
+
+        this.validations = [
+            {element: this.expensesTitleElement}
+        ];
     }
 
-    validateForm() {
-        let isValid = true;
 
-        if (this.inputCreateElement.value) {
-            this.inputCreateElement.classList.remove('is-invalid');
-            this.inputCreateElement.value = '';
-        } else {
-            this.inputCreateElement.classList.add('is-invalid');
-            isValid = false;
+    async createExpenses(e) {
+        e.preventDefault(); //останавливаем отправку формы
+        if (ValidationUtils.validateForm(this.validations)) {
+            const result = await HttpUtils.request('/categories/expense', 'POST', true, {
+                title: this.expensesTitleElement.value
+            });
+            if (result.redirect) {
+                return this.openNewRoute(result.redirect);
+            }
+
+            if (result.error || !result.response || (result.response && result.error)) {
+                return alert('Во время создания категории расходов произошла ошибка');
+            }
+
+            return this.openNewRoute('/expenses');
         }
-
-        return isValid;
     }
-
-
-    createExpenses() {
-        this.validateForm();
-    }
-
-    cancelExpenses() {
-        this.inputCreateElement.classList.remove('is-invalid');
-        this.inputCreateElement.value = '';
-    }
-
 }
