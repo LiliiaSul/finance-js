@@ -6,8 +6,16 @@ export class IncomesExpenses {
         this.openNewRoute = openNewRoute;
 
         this.getIncomesExpenses().then();
-        let dateFrom = document.getElementById('dateFrom');
-        let dateTo = document.getElementById('dateTo');
+
+        this.todayElement = document.getElementById('today');
+        this.weekElement = document.getElementById('week');
+        this.monthElement = document.getElementById('month');
+        this.yearElement = document.getElementById('year');
+        this.allElement = document.getElementById('all');
+        this.intervalElement = document.getElementById('interval');
+
+        const dateFrom = document.getElementById('dateFrom');
+        const dateTo = document.getElementById('dateTo');
 
         const changeDate = () => {
             this.getIncomesExpenses({period: 'interval', dateFrom: dateFrom.value, dateTo: dateTo.value}).then();
@@ -16,34 +24,34 @@ export class IncomesExpenses {
         dateFrom.addEventListener('change', changeDate);
         dateTo.addEventListener('change', changeDate);
 
-        document.getElementById('today').addEventListener('click', () => {
+        this.todayElement.addEventListener('click', () => {
             const today = new Date().toISOString().split('T')[0];
             dateFrom.value = today;
             dateTo.value = today;
             this.getIncomesExpenses({period: 'today'}).then();
         });
-        document.getElementById('week').addEventListener('click', () => {
+        this.weekElement.addEventListener('click', () => {
             const week = new Date();
             week.setDate(week.getDate() - 7);
             dateFrom.value = week.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
             this.getIncomesExpenses({period: 'week'}).then();
         });
-        document.getElementById('month').addEventListener('click', () => {
+        this.monthElement.addEventListener('click', () => {
             const month = new Date();
             month.setMonth(month.getMonth() - 1);
             dateFrom.value = month.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
             this.getIncomesExpenses({period: 'month'}).then();
         });
-        document.getElementById('year').addEventListener('click', () => {
+        this.yearElement.addEventListener('click', () => {
             const year = new Date();
             year.setFullYear(year.getFullYear() - 1);
             dateFrom.value = year.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
             this.getIncomesExpenses({period: 'year'}).then();
         });
-        document.getElementById('all').addEventListener('click', () => {
+        this.allElement.addEventListener('click', () => {
             this.getIncomesExpenses({period: 'all'}).then(date => {
                 const allDates = date.map(item => new Date(item.date));
                 const minDate = new Date(Math.min.apply(null, allDates));
@@ -52,7 +60,7 @@ export class IncomesExpenses {
                 dateTo.value = maxDate.toISOString().split('T')[0];
             });
         });
-        document.getElementById('interval').addEventListener('click', changeDate);
+        this.intervalElement.addEventListener('click', changeDate);
 
         this.activateButtons();
     }

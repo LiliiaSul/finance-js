@@ -35,7 +35,7 @@ export class Expenses {
             buttonGroup.className = ('d-grid gap-2 d-sm-flex');
             const editButton = document.createElement('a');
             editButton.className = ('btn btn-primary');
-            editButton.href = '/edit-expenses?id=' + expenses[i].id;
+            editButton.href = '/expenses/edit?id=' + expenses[i].id;
             editButton.innerText = 'Редактировать';
             const deleteButton = document.createElement('button');
             deleteButton.addEventListener('click', () => {
@@ -61,7 +61,7 @@ export class Expenses {
         const cardBody = document.createElement('div');
         cardBody.className = ('card-body d-flex justify-content-center align-items-center');
         const addButton = document.createElement('a');
-        addButton.href = '/create-expenses';
+        addButton.href = '/expenses/create';
         const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svgIcon.setAttribute('width', '16');
         svgIcon.setAttribute('height', '33');

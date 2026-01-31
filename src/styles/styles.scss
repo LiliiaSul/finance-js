@@ -44,7 +44,17 @@
   box-shadow: none;
 }
 
+.accordion-button:not(.collapsed) {
+  box-shadow: none !important;
+}
+
+.accordion-item:has(.accordion-button:not(.collapsed)) {
+  border-color: #0D6EFD;
+}
+
+
 .sidebar-hr {
   margin-left: -1rem;
   margin-right: -1rem;
 }
+

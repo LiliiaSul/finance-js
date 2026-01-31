@@ -1,6 +1,7 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
+import {ToggleUtils} from "../../utils/toggle-utils";
 
 export class Login {
     constructor(openNewRoute) {
@@ -14,6 +15,11 @@ export class Login {
         this.passwordElement = document.getElementById('password');
         this.rememberMeElement = document.getElementById('remember-me');
         this.commonErrorElement = document.getElementById('common-error');
+        this.togglePassword = document.getElementById('togglePassword');
+
+        this.togglePassword.addEventListener('click', (e) => {
+            ToggleUtils.toggleSwitch(this.passwordElement, e);
+        })
 
         this.validations = [
             {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},

@@ -64,7 +64,7 @@ export class Router {
                 }
             },
             {
-                route: '/create-incomes',
+                route: '/incomes/create',
                 title: 'Создание категории доходов',
                 template: '/templates/pages/incomes/create-incomes.html',
                 useLayout: '/templates/layout.html',
@@ -73,7 +73,7 @@ export class Router {
                 }
             },
             {
-                route: '/edit-incomes',
+                route: '/incomes/edit',
                 title: 'Редактирование категории доходов',
                 template: '/templates/pages/incomes/edit-incomes.html',
                 useLayout: '/templates/layout.html',
@@ -91,7 +91,7 @@ export class Router {
                 }
             },
             {
-                route: '/create-expenses',
+                route: '/expenses/create',
                 title: 'Создание категории расходов',
                 template: '/templates/pages/expenses/create-expenses.html',
                 useLayout: '/templates/layout.html',
@@ -100,7 +100,7 @@ export class Router {
                 }
             },
             {
-                route: '/edit-expenses',
+                route: '/expenses/edit',
                 title: 'Редактирование категории расходов',
                 template: '/templates/pages/expenses/edit-expenses.html',
                 useLayout: '/templates/layout.html',
@@ -207,7 +207,7 @@ export class Router {
 
                 this.userNameElement = document.getElementById('user-name');
                 const userInfo = AuthUtils.getUser();
-                if (userInfo) {
+                if (this.userNameElement && userInfo) {
                     this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
                 }
 
@@ -244,6 +244,27 @@ export class Router {
                 item.classList.add('active');
             } else {
                 item.classList.remove('active');
+            }
+        });
+
+        const accordionLinks = document.querySelectorAll('#accordion a');
+        accordionLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (route.route.split('/')[1] === href.split('/')[1]) {
+                const collapseElement = link.closest('.accordion-collapse');
+                if (collapseElement) {
+                    collapseElement.classList.add('show');
+                }
+                const btnCollapsed = document.querySelector(`[data-bs-target="#${collapseElement.id}"]`);
+                if (btnCollapsed) {
+                    btnCollapsed.classList.remove('collapsed');
+                    btnCollapsed.setAttribute('aria-expanded', 'true');
+                }
+                const liElement = link.closest('li');
+                if (liElement) {
+                    liElement.classList.add('bg-primary','d-block');
+                }
+                link.classList.add('text-white');
             }
         });
     }
