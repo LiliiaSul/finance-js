@@ -191,34 +191,34 @@ export class Router {
                 if (currentRoute.useLayout) { //если есть layout
                     this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout).then(response => response.text());
                     contentBlock = document.getElementById('content-layout');
+
+                    this.balanceElement = document.getElementById('balance');
+                    if (this.balanceElement) {
+                        const balanceData = await this.getBalance();
+                        if (balanceData && typeof balanceData.balance !== 'undefined') {
+                            this.balanceElement.innerText = balanceData.balance + '$';
+                        } else {
+                            // если не удалось получить баланс пользователя, очищаем поле баланса
+                            this.balanceElement.innerText = '';
+                        }
+                    }
+
+                    this.userNameElement = document.getElementById('user-name');
+                    const userInfo = AuthUtils.getUser();
+                    if (this.userNameElement && userInfo) {
+                        this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
+                    }
+
+                    this.activateMenuItem(currentRoute); //активируем пункт меню
                 }
                 contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
-
-                this.balanceElement = document.getElementById('balance');
-                if (this.balanceElement) {
-                    const balanceData = await this.getBalance();
-                    if (balanceData && typeof balanceData.balance !== 'undefined') {
-                        this.balanceElement.innerText = balanceData.balance + '$';
-                    } else {
-                        // если не удалось получить баланс пользователя, очищаем поле баланса
-                        this.balanceElement.innerText = '';
-                    }
-                }
-
-                this.userNameElement = document.getElementById('user-name');
-                const userInfo = AuthUtils.getUser();
-                if (this.userNameElement && userInfo) {
-                    this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
-                }
-
-                this.activateMenuItem(currentRoute);
             }
 
             if (currentRoute.load && typeof currentRoute.load === 'function') {
                 currentRoute.load();
             }
-
-
+        } else {
+            this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
         }
     }
 
@@ -262,7 +262,7 @@ export class Router {
                 }
                 const liElement = link.closest('li');
                 if (liElement) {
-                    liElement.classList.add('bg-primary','d-block');
+                    liElement.classList.add('bg-primary', 'd-block');
                 }
                 link.classList.add('text-white');
             }
