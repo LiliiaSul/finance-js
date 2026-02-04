@@ -12,6 +12,7 @@ import {CreateIncomesExpenses} from "./components/incomes-expenses/create-income
 import {EditIncomesExpenses} from "./components/incomes-expenses/edit-incomes-expenses";
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
+import {HttpUtils} from "./utils/http-utils";
 
 export class Router {
     constructor() {
@@ -26,7 +27,7 @@ export class Router {
                 template: '/templates/main.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Main();
+                    new Main(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -59,25 +60,25 @@ export class Router {
                 template: '/templates/pages/incomes/incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Incomes();
+                    new Incomes(this.openNewRoute.bind(this));
                 }
             },
             {
-                route: '/create-incomes',
+                route: '/incomes/create',
                 title: 'Создание категории доходов',
                 template: '/templates/pages/incomes/create-incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateIncomes();
+                    new CreateIncomes(this.openNewRoute.bind(this));
                 }
             },
             {
-                route: '/edit-incomes',
+                route: '/incomes/edit',
                 title: 'Редактирование категории доходов',
                 template: '/templates/pages/incomes/edit-incomes.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditIncomes();
+                    new EditIncomes(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -86,25 +87,25 @@ export class Router {
                 template: '/templates/pages/expenses/expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new Expenses();
+                    new Expenses(this.openNewRoute.bind(this));
                 }
             },
             {
-                route: '/create-expenses',
+                route: '/expenses/create',
                 title: 'Создание категории расходов',
                 template: '/templates/pages/expenses/create-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateExpenses();
+                    new CreateExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
-                route: '/edit-expenses',
+                route: '/expenses/edit',
                 title: 'Редактирование категории расходов',
                 template: '/templates/pages/expenses/edit-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditExpenses();
+                    new EditExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -113,7 +114,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new IncomesExpenses();
+                    new IncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -122,7 +123,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/create-incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new CreateIncomesExpenses();
+                    new CreateIncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
             {
@@ -131,7 +132,7 @@ export class Router {
                 template: '/templates/pages/incomes-expenses/edit-incomes-expenses.html',
                 useLayout: '/templates/layout.html',
                 load: () => {
-                    new EditIncomesExpenses();
+                    new EditIncomesExpenses(this.openNewRoute.bind(this));
                 }
             },
         ];
@@ -190,6 +191,25 @@ export class Router {
                 if (currentRoute.useLayout) { //если есть layout
                     this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout).then(response => response.text());
                     contentBlock = document.getElementById('content-layout');
+
+                    this.balanceElement = document.getElementById('balance');
+                    if (this.balanceElement) {
+                        const balanceData = await this.getBalance();
+                        if (balanceData && typeof balanceData.balance !== 'undefined') {
+                            this.balanceElement.innerText = balanceData.balance + '$';
+                        } else {
+                            // если не удалось получить баланс пользователя, очищаем поле баланса
+                            this.balanceElement.innerText = '';
+                        }
+                    }
+
+                    this.userNameElement = document.getElementById('user-name');
+                    const userInfo = AuthUtils.getUser();
+                    if (this.userNameElement && userInfo) {
+                        this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
+                    }
+
+                    this.activateMenuItem(currentRoute); //активируем пункт меню
                 }
                 contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
             }
@@ -197,11 +217,55 @@ export class Router {
             if (currentRoute.load && typeof currentRoute.load === 'function') {
                 currentRoute.load();
             }
-
         } else {
-            console.log('No found route');
-            history.pushState({}, '', '/'); //перенаправление на главную страницу
-            await this.activateRoute();
+            this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
         }
+    }
+
+    async getBalance() {
+        const result = await HttpUtils.request('/balance');
+        if (result.redirect) { // если нужно перенаправление
+            await this.openNewRoute(result.redirect);
+            return null;
+        }
+
+        if (result.error || !result.response || (result.response && result.response.error)) {
+            alert('Возникла ошибка при получении баланса. Обратитесь в поддержку.');
+            return null;
+        }
+
+        return result.response;
+    }
+
+    activateMenuItem(route) {
+        document.querySelectorAll('.nav .nav-link').forEach(item => {
+            const href = item.getAttribute('href');
+            if ((route.route.includes(href) && href !== '/') || (route.route === '/' && href === '/')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        const accordionLinks = document.querySelectorAll('#accordion a');
+        accordionLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (route.route.split('/')[1] === href.split('/')[1]) {
+                const collapseElement = link.closest('.accordion-collapse');
+                if (collapseElement) {
+                    collapseElement.classList.add('show');
+                }
+                const btnCollapsed = document.querySelector(`[data-bs-target="#${collapseElement.id}"]`);
+                if (btnCollapsed) {
+                    btnCollapsed.classList.remove('collapsed');
+                    btnCollapsed.setAttribute('aria-expanded', 'true');
+                }
+                const liElement = link.closest('li');
+                if (liElement) {
+                    liElement.classList.add('bg-primary', 'd-block');
+                }
+                link.classList.add('text-white');
+            }
+        });
     }
 }
