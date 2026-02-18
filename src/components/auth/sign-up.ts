@@ -3,16 +3,17 @@ import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {ToggleUtils} from "../../utils/toggle-utils";
 import {OpenNewRouteType} from "../../types/openNewRoute.type";
-import {ValidatableElementType} from "../../types/validatable.element.type";
+import {ValidatableElementType, ValidationOptionsType} from "../../types/validatable.element.type";
+import {UserInfoType} from "../../types/user-info.type";
 
 export class SignUp {
     readonly openNewRoute: OpenNewRouteType;
-    readonly nameElement: HTMLElement | null;
-    readonly lastNameElement: HTMLElement | null;
-    readonly emailElement: HTMLElement | null;
-    readonly passwordElement: HTMLElement | null;
-    readonly passwordRepeatElement: HTMLElement | null;
-    readonly rememberMeElement: HTMLElement | null;
+    readonly nameElement: HTMLInputElement | null;
+    readonly lastNameElement: HTMLInputElement | null;
+    readonly emailElement: HTMLInputElement | null;
+    readonly passwordElement: HTMLInputElement | null;
+    readonly passwordRepeatElement: HTMLInputElement | null;
+    readonly rememberMeElement: HTMLInputElement | null;
     readonly commonErrorElement: HTMLElement | null;
     readonly togglePassword: HTMLElement | null;
     readonly toggleRepeatPassword: HTMLElement | null;
@@ -21,12 +22,12 @@ export class SignUp {
 
     constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.nameElement = document.getElementById('name');
-        this.lastNameElement = document.getElementById('last-name');
-        this.emailElement = document.getElementById('email');
-        this.passwordElement = document.getElementById('password');
-        this.passwordRepeatElement = document.getElementById('password-repeat');
-        this.rememberMeElement = document.getElementById('remember-me');
+        this.nameElement = document.getElementById('name') as HTMLInputElement;
+        this.lastNameElement = document.getElementById('last-name') as HTMLInputElement;
+        this.emailElement = document.getElementById('email') as HTMLInputElement;
+        this.passwordElement = document.getElementById('password') as HTMLInputElement;
+        this.passwordRepeatElement = document.getElementById('password-repeat') as HTMLInputElement;
+        this.rememberMeElement = document.getElementById('remember-me') as HTMLInputElement;
         this.commonErrorElement = document.getElementById('common-error');
         this.togglePassword = document.getElementById('togglePassword');
         this.toggleRepeatPassword = document.getElementById('toggleRepeatPassword');
@@ -51,39 +52,43 @@ export class SignUp {
         ];
 
         if (this.togglePassword) {
-        this.togglePassword.addEventListener('click', (e) => {
-            ToggleUtils.toggleSwitch(this.passwordElement, e);
-        })}
+            this.togglePassword.addEventListener('click', (e) => {
+                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
+            })
+        }
 
-        if(this.toggleRepeatPassword) {
-        this.toggleRepeatPassword.addEventListener('click', (e) => {
-            ToggleUtils.toggleSwitch(this.passwordRepeatElement, e);
-        })}
+        if (this.toggleRepeatPassword) {
+            this.toggleRepeatPassword.addEventListener('click', (e) => {
+                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
+            })
+        }
     }
 
 
-   private async signUp(): Promise<void> {
+    private async signUp(): Promise<void> {
         if (this.commonErrorElement) {
             this.commonErrorElement.style.display = 'none';
         }
 
         for (let i = 0; i < this.validations.length; i++) { // обновляем значение для сравнения паролей
             if (this.validations[i].element === this.passwordRepeatElement) {
-                this.validations[i].options.compareTo = this.passwordElement.value;
+                (this.validations[i].options as ValidationOptionsType).compareTo = (this.passwordElement as HTMLInputElement).value;
             }
         }
         if (ValidationUtils.validateForm(this.validations)) {
             try {
-                const result = await HttpUtils.request('/signup', 'POST', false, {
-                    name: this.nameElement.value,
-                    lastName: this.lastNameElement.value,
-                    email: this.emailElement.value,
-                    password: this.passwordElement.value,
-                    passwordRepeat: this.passwordRepeatElement.value
+                const result = await HttpUtils.request<{ user: UserInfoType }>('/signup', 'POST', false, {
+                    name: (this.nameElement as HTMLInputElement).value,
+                    lastName: (this.lastNameElement as HTMLInputElement).value,
+                    email: (this.emailElement as HTMLInputElement).value,
+                    password: (this.passwordElement as HTMLInputElement).value,
+                    passwordRepeat: (this.passwordRepeatElement as HTMLInputElement).value
                 });
 
                 if (result.error || !result.response || (result.response && !result.response.user)) {
-                    this.commonErrorElement.style.display = 'block';
+                    if (this.commonErrorElement) {
+                        this.commonErrorElement.style.display = 'block';
+                    }
                     return;
                 }
 

@@ -4,12 +4,14 @@ import {ValidationUtils} from "../../utils/validation-utils";
 import {ToggleUtils} from "../../utils/toggle-utils";
 import {OpenNewRouteType} from "../../types/openNewRoute.type";
 import {ValidatableElementType} from "../../types/validatable.element.type";
+import {UserInfoType} from "../../types/user-info.type";
+import {TokensType} from "../../types/tokens.type";
 
 export class Login {
     readonly openNewRoute: OpenNewRouteType;
-    readonly emailElement: HTMLElement | null;
-    readonly passwordElement: HTMLElement | null;
-    readonly rememberMeElement: HTMLElement | null;
+    readonly emailElement: HTMLInputElement | null;
+    readonly passwordElement: HTMLInputElement | null;
+    readonly rememberMeElement: HTMLInputElement | null;
     readonly commonErrorElement: HTMLElement | null;
     readonly togglePassword: HTMLElement | null;
     readonly validations: ValidatableElementType[] = [];
@@ -18,9 +20,9 @@ export class Login {
 
     constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.emailElement = document.getElementById('email');
-        this.passwordElement = document.getElementById('password');
-        this.rememberMeElement = document.getElementById('remember-me');
+        this.emailElement = document.getElementById('email') as HTMLInputElement;
+        this.passwordElement = document.getElementById('password') as HTMLInputElement;
+        this.rememberMeElement = document.getElementById('remember-me') as HTMLInputElement;
         this.commonErrorElement = document.getElementById('common-error');
         this.togglePassword = document.getElementById('togglePassword');
         this.submitButton = document.getElementById('submit');
@@ -33,12 +35,12 @@ export class Login {
 
         if (this.togglePassword) {
             this.togglePassword.addEventListener('click', (e: PointerEvent): void => {
-                ToggleUtils.toggleSwitch(this.passwordElement, e);
+                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
             })
         }
 
         this.validations = [
-            {element:  this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
             {element: this.passwordElement}
         ];
 
@@ -55,14 +57,19 @@ export class Login {
         if (ValidationUtils.validateForm(this.validations)) {
             try {
                 // запрос отправляем
-                const result = await HttpUtils.request('/login', 'POST', false, {
-                    email: this.emailElement.value,
-                    password: this.passwordElement.value,
+                const result = await HttpUtils.request<{
+                    user: UserInfoType,
+                    tokens: TokensType
+                }>('/login', 'POST', false, {
+                    email: (this.emailElement as HTMLInputElement).value,
+                    password: (this.passwordElement as HTMLInputElement).value,
                     rememberMe: this.rememberMeElement ? this.rememberMeElement.checked : false
                 });
 
                 if (result.error || !result.response || (result.response && (!result.response.tokens || !result.response.user))) {
-                    this.commonErrorElement.style.display = 'block';
+                    if (this.commonErrorElement) {
+                        this.commonErrorElement.style.display = 'block';
+                    }
                     return;
                 }
 

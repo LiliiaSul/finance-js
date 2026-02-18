@@ -205,7 +205,7 @@ export class Router {
                     }
 
                     if (this.balanceElement) {
-                        const balanceData: BalanceType | null = await this.getBalance();
+                        const balanceData = await this.getBalance();
                         if (balanceData && typeof balanceData.balance !== 'undefined') {
                             this.balanceElement.innerText = balanceData.balance + '$';
                         } else {
@@ -237,13 +237,13 @@ export class Router {
     }
 
     private async getBalance() {
-        const result = await HttpUtils.request('/balance');
+        const result = await HttpUtils.request<BalanceType>('/balance');
         if (result.redirect) { // если нужно перенаправление
             await this.openNewRoute(result.redirect);
             return null;
         }
 
-        if (result.error || !result.response || (result.response && result.response.error)) {
+        if (result.error || !result.response) {
             alert('Возникла ошибка при получении баланса. Обратитесь в поддержку.');
             return null;
         }
