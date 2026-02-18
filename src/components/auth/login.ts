@@ -2,36 +2,56 @@ import {AuthUtils} from "../../utils/auth-utils";
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {ToggleUtils} from "../../utils/toggle-utils";
+import {OpenNewRouteType} from "../../types/openNewRoute.type";
+import {ValidatableElementType} from "../../types/validatable.element.type";
 
 export class Login {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteType;
+    readonly emailElement: HTMLElement | null;
+    readonly passwordElement: HTMLElement | null;
+    readonly rememberMeElement: HTMLElement | null;
+    readonly commonErrorElement: HTMLElement | null;
+    readonly togglePassword: HTMLElement | null;
+    readonly validations: ValidatableElementType[] = [];
+    readonly submitButton: HTMLElement | null;
+
+
+    constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-
-        if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
-            return this.openNewRoute('/');
-        }
-
         this.emailElement = document.getElementById('email');
         this.passwordElement = document.getElementById('password');
         this.rememberMeElement = document.getElementById('remember-me');
         this.commonErrorElement = document.getElementById('common-error');
         this.togglePassword = document.getElementById('togglePassword');
+        this.submitButton = document.getElementById('submit');
 
-        this.togglePassword.addEventListener('click', (e) => {
-            ToggleUtils.toggleSwitch(this.passwordElement, e);
-        })
+        if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
+            this.openNewRoute('/');
+            return;
+        }
+
+
+        if (this.togglePassword) {
+            this.togglePassword.addEventListener('click', (e: PointerEvent): void => {
+                ToggleUtils.toggleSwitch(this.passwordElement, e);
+            })
+        }
 
         this.validations = [
-            {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
+            {element:  this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
             {element: this.passwordElement}
         ];
 
-        document.getElementById('submit').addEventListener('click', this.login.bind(this));
+        if (this.submitButton) {
+            this.submitButton.addEventListener('click', this.login.bind(this));
+        }
     }
 
 
-    async login() {
-        this.commonErrorElement.style.display = 'none';
+    private async login(): Promise<void> {
+        if (this.commonErrorElement) {
+            this.commonErrorElement.style.display = 'none';
+        }
         if (ValidationUtils.validateForm(this.validations)) {
             try {
                 // запрос отправляем
@@ -59,7 +79,9 @@ export class Login {
 
                 this.openNewRoute('/'); // перенаправляем на главную страницу
             } catch (e) {
-                this.commonErrorElement.style.display = 'block';
+                if (this.commonErrorElement) {
+                    this.commonErrorElement.style.display = 'block';
+                }
             }
         }
     }

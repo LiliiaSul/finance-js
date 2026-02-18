@@ -2,15 +2,25 @@ import {AuthUtils} from "../../utils/auth-utils";
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {ToggleUtils} from "../../utils/toggle-utils";
+import {OpenNewRouteType} from "../../types/openNewRoute.type";
+import {ValidatableElementType} from "../../types/validatable.element.type";
 
 export class SignUp {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteType;
+    readonly nameElement: HTMLElement | null;
+    readonly lastNameElement: HTMLElement | null;
+    readonly emailElement: HTMLElement | null;
+    readonly passwordElement: HTMLElement | null;
+    readonly passwordRepeatElement: HTMLElement | null;
+    readonly rememberMeElement: HTMLElement | null;
+    readonly commonErrorElement: HTMLElement | null;
+    readonly togglePassword: HTMLElement | null;
+    readonly toggleRepeatPassword: HTMLElement | null;
+    readonly validations: ValidatableElementType[] = [];
+    readonly submitButton: HTMLElement | null;
+
+    constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-
-        if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
-            return this.openNewRoute('/');
-        }
-
         this.nameElement = document.getElementById('name');
         this.lastNameElement = document.getElementById('last-name');
         this.emailElement = document.getElementById('email');
@@ -20,8 +30,17 @@ export class SignUp {
         this.commonErrorElement = document.getElementById('common-error');
         this.togglePassword = document.getElementById('togglePassword');
         this.toggleRepeatPassword = document.getElementById('toggleRepeatPassword');
+        this.submitButton = document.getElementById('submit');
 
-        document.getElementById('submit').addEventListener('click', this.signUp.bind(this));
+
+        if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
+            this.openNewRoute('/');
+            return;
+        }
+
+        if (this.submitButton) {
+            this.submitButton.addEventListener('click', this.signUp.bind(this));
+        }
 
         this.validations = [
             {element: this.nameElement, options: {pattern: /^[А-Я][а-я]+\s*$/}},
@@ -31,17 +50,23 @@ export class SignUp {
             {element: this.passwordRepeatElement, options: {compareTo: this.passwordElement.value}}
         ];
 
+        if (this.togglePassword) {
         this.togglePassword.addEventListener('click', (e) => {
             ToggleUtils.toggleSwitch(this.passwordElement, e);
-        })
+        })}
+
+        if(this.toggleRepeatPassword) {
         this.toggleRepeatPassword.addEventListener('click', (e) => {
             ToggleUtils.toggleSwitch(this.passwordRepeatElement, e);
-        })
+        })}
     }
 
 
-    async signUp() {
-        this.commonErrorElement.style.display = 'none';
+   private async signUp(): Promise<void> {
+        if (this.commonErrorElement) {
+            this.commonErrorElement.style.display = 'none';
+        }
+
         for (let i = 0; i < this.validations.length; i++) { // обновляем значение для сравнения паролей
             if (this.validations[i].element === this.passwordRepeatElement) {
                 this.validations[i].options.compareTo = this.passwordElement.value;
@@ -72,7 +97,9 @@ export class SignUp {
 
                 this.openNewRoute('/');
             } catch (e) {
-                this.commonErrorElement.style.display = 'block';
+                if (this.commonErrorElement) {
+                    this.commonErrorElement.style.display = 'block';
+                }
             }
         }
     }

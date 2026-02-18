@@ -13,11 +13,23 @@ import {EditIncomesExpenses} from "./components/incomes-expenses/edit-incomes-ex
 import {Logout} from "./components/auth/logout";
 import {AuthUtils} from "./utils/auth-utils";
 import {HttpUtils} from "./utils/http-utils";
+import {RouteType} from "./types/route.type";
+import {OpenNewRouteType} from "./types/openNewRoute.type";
+import {BalanceType} from "./types/balance.type";
+import {UserInfoType} from "./types/user-info.type";
 
 export class Router {
+    readonly titlePageElement: HTMLElement | null;
+    readonly contentPageElement: HTMLElement | null;
+    readonly balanceElement: HTMLElement | null;
+    readonly userNameElement: HTMLElement | null;
+    private routes: RouteType[];
+
     constructor() {
         this.titlePageElement = document.getElementById('title');
         this.contentPageElement = document.getElementById('content');
+        this.balanceElement = document.getElementById('balance');
+        this.userNameElement = document.getElementById('user-name');
 
         this.initEvents();
         this.routes = [
@@ -138,63 +150,62 @@ export class Router {
         ];
     }
 
-    initEvents() {
+    private initEvents(): void {
         window.addEventListener('DOMContentLoaded', this.activateRoute.bind(this));
         window.addEventListener('popstate', this.activateRoute.bind(this));
         document.addEventListener('click', this.clickHandler.bind(this)); //отслеживаем клики по всему документу
-
     }
 
-    async openNewRoute(url) { //открываем новую страницу
+    public async openNewRoute(url: string): Promise<void> { //открываем новую страницу
         history.pushState({}, '', url); //обновление url адреса в браузере
         await this.activateRoute();
     }
 
-    async clickHandler(event) { //обработка клика по ссылке
-        let element = null;
-        if (event.target.nodeName === 'A') {
-            element = event.target;
-        } else if (event.target.parentNode.nodeName === 'A') { //если кликнули на вложенный элемент внутри ссылки
-            element = event.target.parentNode;
+    private async clickHandler(event: MouseEvent): Promise<void> { //обработка клика по ссылке
+        const target = event.target as HTMLElement; //получаем элемент, по которому кликнули
+        const anchorElement: HTMLAnchorElement | null = target.closest('a'); //ищем ближайший элемент <a> к месту клика
+        if (!anchorElement) return; //если кликнули не по ссылке, ничего не делаем
+
+        const href: string | null = anchorElement.getAttribute('href'); //получаем значение атрибута href
+        if (!href || href === '/#' || href.startsWith('javascript:void(0)')) { //если ссылка состоит из # или пустая, ничего не делаем
+            return;
         }
 
-        if (element) { //если кликнули по ссылке
-            event.preventDefault(); //отменяем стандартное поведение ссылки
-
-            const url = element.href.replace(window.location.origin, ''); //получаем только путь без домена
-            if (!url || url === '/#' || url.startsWith('javascript:void(0)')) { //если ссылка состоит из # или пустая
-                return;
-            }
-
-            await this.openNewRoute(url);
-        }
+        event.preventDefault(); //отменяем стандартное поведение ссылки
+        const url: string = href.replace(window.location.origin, ''); //получаем только путь без домена
+        await this.openNewRoute(url); //открываем новую страницу
     }
 
-    async activateRoute() {
-        const urlRoute = window.location.pathname;
 
-        const isAuthRoute = urlRoute === '/login' || urlRoute === '/sign-up';
+    private async activateRoute(): Promise<void> {
+        const urlRoute: string = window.location.pathname;
+
+        const isAuthRoute: boolean = urlRoute === '/login' || urlRoute === '/sign-up';
 
         if (!AuthUtils.getTokens('accessToken') && !isAuthRoute) { //если пользователь не авторизован
             return this.openNewRoute('/login');
         }
 
-        const currentRoute = this.routes.find(item => item.route === urlRoute);
+        const currentRoute: RouteType | undefined = this.routes.find(item => item.route === urlRoute);
 
         if (currentRoute) {
             if (currentRoute.title) {
-                this.titlePageElement.innerText = currentRoute.title;
+                if (this.titlePageElement) {
+                    this.titlePageElement.innerText = currentRoute.title;
+                }
             }
 
             if (currentRoute.template) { //если есть шаблон
-                let contentBlock = this.contentPageElement;
-                if (currentRoute.useLayout) { //если есть layout
-                    this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout).then(response => response.text());
-                    contentBlock = document.getElementById('content-layout');
+                let contentBlock: HTMLElement | null = this.contentPageElement;
 
-                    this.balanceElement = document.getElementById('balance');
+                if (currentRoute.useLayout) { //если есть layout
+                    if (this.contentPageElement) { //загружаем layout в content
+                        this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout as string).then(response => response.text());
+                        contentBlock = document.getElementById('content-layout');
+                    }
+
                     if (this.balanceElement) {
-                        const balanceData = await this.getBalance();
+                        const balanceData: BalanceType | null = await this.getBalance();
                         if (balanceData && typeof balanceData.balance !== 'undefined') {
                             this.balanceElement.innerText = balanceData.balance + '$';
                         } else {
@@ -203,26 +214,29 @@ export class Router {
                         }
                     }
 
-                    this.userNameElement = document.getElementById('user-name');
-                    const userInfo = AuthUtils.getUser();
+                    const userInfo: UserInfoType | null = AuthUtils.getUser();
                     if (this.userNameElement && userInfo) {
                         this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
                     }
 
                     this.activateMenuItem(currentRoute); //активируем пункт меню
                 }
-                contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
+                if (contentBlock) {
+                    contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
+                }
             }
 
             if (currentRoute.load && typeof currentRoute.load === 'function') {
                 currentRoute.load();
             }
         } else {
-            this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
+            if (this.contentPageElement) {
+                this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
+            }
         }
     }
 
-    async getBalance() {
+    private async getBalance() {
         const result = await HttpUtils.request('/balance');
         if (result.redirect) { // если нужно перенаправление
             await this.openNewRoute(result.redirect);
@@ -237,30 +251,32 @@ export class Router {
         return result.response;
     }
 
-    activateMenuItem(route) {
+    private activateMenuItem(route: RouteType): void {
         document.querySelectorAll('.nav .nav-link').forEach(item => {
-            const href = item.getAttribute('href');
-            if ((route.route.includes(href) && href !== '/') || (route.route === '/' && href === '/')) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
+            const href: string | null = item.getAttribute('href');
+            if (href) {
+                if ((route.route.includes(href) && href !== '/') || (route.route === '/' && href === '/')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
             }
         });
 
-        const accordionLinks = document.querySelectorAll('#accordion a');
-        accordionLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (route.route.split('/')[1] === href.split('/')[1]) {
-                const collapseElement = link.closest('.accordion-collapse');
+        const accordionLinks: NodeListOf<Element> = document.querySelectorAll('#accordion a'); //находим все ссылки внутри аккордеона
+        accordionLinks.forEach(link => { //проходим по каждой ссылке и сравниваем ее href с текущим маршрутом
+            const href: string | null = link.getAttribute('href');
+            if (route.route.split('/')[1] === href?.split('/')[1]) {
+                const collapseElement: HTMLElement | null = link.closest('.accordion-collapse'); //находим ближайший родительский элемент с классом .accordion-collapse, который отвечает за скрытие/показ вложенных пунктов меню
                 if (collapseElement) {
                     collapseElement.classList.add('show');
                 }
-                const btnCollapsed = document.querySelector(`[data-bs-target="#${collapseElement.id}"]`);
+                const btnCollapsed: HTMLElement | null = document.querySelector(`[data-bs-target="#${collapseElement?.id}"]`);
                 if (btnCollapsed) {
                     btnCollapsed.classList.remove('collapsed');
                     btnCollapsed.setAttribute('aria-expanded', 'true');
                 }
-                const liElement = link.closest('li');
+                const liElement: HTMLElement | null = link.closest('li');
                 if (liElement) {
                     liElement.classList.add('bg-primary', 'd-block');
                 }

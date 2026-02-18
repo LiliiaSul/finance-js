@@ -1,8 +1,8 @@
 export class ToggleUtils {
-    static toggleSwitch(element, event) {
+   public static toggleSwitch(element: HTMLElement, event: PointerEvent) {
         event.preventDefault();
         event.stopPropagation();
-        const type = element.getAttribute('type') === 'password' ? 'text' : 'password';
+        const type: string = element.getAttribute('type') === 'password' ? 'text' : 'password';
         element.setAttribute('type', type);
         if (type === 'text') {
             element.innerHTML = `

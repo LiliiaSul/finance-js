@@ -1,14 +1,16 @@
 import config from "../config/config";
 import {AuthUtils} from "./auth-utils";
+import {TokensType} from "../types/tokens.type";
 
 export class HttpUtils {
-    static async request(url, method = "GET", useAuth = true, body = null) {
+   public static async request(url: string, method: string = "GET", useAuth: boolean = true, body: any = null): Promise<any> {
         const result = { // объект результата запроса
             error: false, // была ли ошибка
             response: null, // ответ сервера
+            redirect: url
         };
 
-        const params = {
+        const params: any = {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
@@ -16,7 +18,7 @@ export class HttpUtils {
             },
         };
 
-        let token = null;
+        let token: string | TokensType | null = null;
         if (useAuth) {
             token = AuthUtils.getTokens('accessToken');
             if (token) {
@@ -28,7 +30,7 @@ export class HttpUtils {
             params.body = JSON.stringify(body); // преобразуем объект в JSON строку
         }
 
-        let response = null;
+        let response: Response | null = null;
         try {
             response = await fetch(config.api + url, params);
             result.response = await response.json(); // получаем ответ сервера в формате JSON
@@ -45,7 +47,7 @@ export class HttpUtils {
                     result.redirect = '/login'; // перенаправляем на страницу логина
                 } else {
                     //2 - токен истек/невалидный (надо обновить)
-                   const updateTokenResult = await AuthUtils.updateRefreshToken();
+                   const updateTokenResult: boolean = await AuthUtils.updateRefreshToken();
                    if (updateTokenResult) {
                        //повторяем запрос с новым токеном
                        return this.request(url, method, useAuth, body);

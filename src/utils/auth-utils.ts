@@ -1,15 +1,18 @@
 import config from "../config/config";
+import {UserInfoType} from "../types/user-info.type";
+import {TokensType} from "../types/tokens.type";
+import {RefreshResponseType} from "../types/refresh-response.type";
 
 export class AuthUtils {
-    static tokensKey = 'tokens';
-    static userKey = 'user';
+    private static tokensKey = 'tokens';
+    private static userKey = 'user';
 
-    static setTokens(tokens) {
+    public static setTokens(tokens: TokensType): void {
         localStorage.setItem(this.tokensKey, JSON.stringify(tokens));
     }
 
-    static getTokens(key = null) {
-        const tokens = localStorage.getItem(this.tokensKey);
+    public static getTokens(key: string | null): string | TokensType | null { // Получаем токены из localStorage. Если ключ не указан, возвращаем весь объект токенов, иначе возвращаем только указанный токен (accessToken или refreshToken)
+        const tokens: string | null = localStorage.getItem(this.tokensKey);
 
         if (!tokens) {
             return null;
@@ -28,30 +31,30 @@ export class AuthUtils {
     }
 
 
-    static removeTokens() {
+    public static removeTokens(): void {
         localStorage.removeItem(this.tokensKey);
     }
 
-    static setUser(user) {
+    public static setUser(user: UserInfoType): void {
         localStorage.setItem(this.userKey, JSON.stringify(user));
     }
 
-    static getUser() {
-        const user = localStorage.getItem(this.userKey);
+    public static getUser(): UserInfoType | null {
+        const user: string | null = localStorage.getItem(this.userKey);
         return user ? JSON.parse(user) : null;
     }
 
-    static removeUser() {
+    public static removeUser() {
         localStorage.removeItem(this.userKey);
     }
 
-    static async updateRefreshToken() {
-        let result = false;
-        const refreshToken = this.getTokens('refreshToken');
+    public static async updateRefreshToken(): Promise<boolean> {
+        let result: boolean = false;
+        const refreshToken: string | TokensType | null = this.getTokens('refreshToken');
 
         if (refreshToken) {
             try {
-                const response = await fetch(config.api + '/refresh', {
+                const response: Response = await fetch(config.api + '/refresh', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -61,9 +64,9 @@ export class AuthUtils {
                 });
 
                 if (response && response.status === 200) {
-                    const data = await response.json();
-                    const tokens = data.tokens;
-                    if (tokens.accessToken && tokens.refreshToken && !data.error) {
+                    const data: RefreshResponseType = await response.json();
+                    const tokens: TokensType | undefined = data.tokens;
+                    if (tokens && tokens.accessToken && tokens.refreshToken && !data.error) {
                         this.setTokens(tokens);
                         result = true;
                     }
