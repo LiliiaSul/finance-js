@@ -35,7 +35,7 @@ export class SignUp {
 
 
         if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
-            this.openNewRoute('/');
+            this.openNewRoute('/').then();
             return;
         }
 
@@ -100,7 +100,7 @@ export class SignUp {
                     lastName: result.response.user.lastName
                 });
 
-                this.openNewRoute('/');
+                await this.openNewRoute('/');
             } catch (e) {
                 if (this.commonErrorElement) {
                     this.commonErrorElement.style.display = 'block';

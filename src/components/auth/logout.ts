@@ -9,7 +9,7 @@ export class Logout {
         this.openNewRoute = openNewRoute;
 
         if (!AuthUtils.getTokens('accessToken') || !AuthUtils.getTokens('refreshToken')) { // Если нет токенов, перенаправляем на страницу логина
-            this.openNewRoute('/login');
+            this.openNewRoute('/login').then();
             return;
         }
 
@@ -25,6 +25,6 @@ export class Logout {
         AuthUtils.removeTokens();
         AuthUtils.removeUser();
 
-        this.openNewRoute('/login'); // перенаправляем на страницу логина
+        await this.openNewRoute('/login'); // перенаправляем на страницу логина
     }
 }

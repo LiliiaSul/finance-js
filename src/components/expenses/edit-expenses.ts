@@ -1,30 +1,47 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
+import {OpenNewRouteType} from "../../types/openNewRoute.type";
+import {ValidatableElementType} from "../../types/validatable.element.type";
+import {GetCategoryType} from "../../types/get-category.type";
 
 export class EditExpenses {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteType;
+    readonly editTitleElement: HTMLInputElement | null;
+    readonly updateButton: HTMLElement | null;
+    readonly cancelButton: HTMLElement | null;
+    private expenseOriginalData: GetCategoryType | undefined; //объект для хранения оригинальных данных категории расходов
+    readonly validations: ValidatableElementType[] = [];
+
+    constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
+        this.editTitleElement = document.getElementById('edit-title') as HTMLInputElement;
+        this.updateButton = document.getElementById('update');
+        this.cancelButton = document.getElementById('cancel');
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const id: string | null = urlParams.get('id');
         if (!id) {
-            return this.openNewRoute('/');
+            this.openNewRoute('/').then();
+            return;
         }
-        document.getElementById('update').addEventListener('click', this.updateExpenses.bind(this));
-        document.getElementById('cancel').addEventListener('click', () => {
-            this.openNewRoute('/expenses');
-        });
 
-        this.editTitleElement = document.getElementById('edit-title');
+        if (this.updateButton) {
+            this.updateButton.addEventListener('click', this.updateExpenses.bind(this));
+        }
+        if (this.cancelButton) {
+            this.cancelButton.addEventListener('click', () => {
+                this.openNewRoute('/expenses').then();
+            });
+        }
 
         this.validations = [
             {element: this.editTitleElement}
         ];
 
-        this.getExpense(id).then();
+        this.getExpense(parseInt(id)).then();
     }
 
-    async getExpense(id) { //получаем данные о категории расходов по id
+    private async getExpense(id: number): Promise<void> { //получаем данные о категории расходов по id
         const result = await HttpUtils.request('/categories/expense/' + id);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
@@ -34,22 +51,31 @@ export class EditExpenses {
             return alert('Во время получения категории расходов произошла ошибка');
         }
 
-        this.expenseOriginalData = result.response; //сохраняем оригинальные данные категории расходов
-        this.showExpense(result.response);
+
+        this.expenseOriginalData = result.response as unknown as GetCategoryType; //сохраняем оригинальные данные категории расходов
+        this.showExpense(this.expenseOriginalData);
     }
 
-    showExpense(expense) {
-        document.getElementById('edit-title').value = expense.title;
+    private showExpense(expense: GetCategoryType): void {
+        if (this.editTitleElement) {
+            this.editTitleElement.value = expense.title;
+        }
     }
 
 
-    async updateExpenses(e) {
+    private async updateExpenses(e: Event): Promise<void> {
         e.preventDefault();
         if (ValidationUtils.validateForm(this.validations)) {
-            const changedData = {}; //объект для хранения измененных данных
-            if (this.editTitleElement.value !== this.expenseOriginalData.title) { //проверяем, изменилось ли значение
-                changedData.title = this.editTitleElement.value;
+            if (!this.expenseOriginalData) {
+                return;
             }
+            const changedData: Partial<GetCategoryType> = {}; //объект для хранения измененных данных
+            if (this.editTitleElement) {
+                if (this.editTitleElement.value !== this.expenseOriginalData.title) { //проверяем, изменилось ли значение
+                    changedData.title = this.editTitleElement.value;
+                }
+            }
+
             if (Object.keys(changedData).length > 0) { //если есть измененные данные, отправляем запрос на обновление
                 const result = await HttpUtils.request('/categories/expense/' + this.expenseOriginalData.id, 'PUT', true, changedData);
                 if (result.redirect) {

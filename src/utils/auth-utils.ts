@@ -4,8 +4,8 @@ import {TokensType} from "../types/tokens.type";
 import {RefreshResponseType} from "../types/refresh-response.type";
 
 export class AuthUtils {
-    private static tokensKey = 'tokens';
-    private static userKey = 'user';
+    private static tokensKey: string = 'tokens';
+    private static userKey: string = 'user';
 
     public static setTokens(tokens: TokensType): void {
         localStorage.setItem(this.tokensKey, JSON.stringify(tokens));

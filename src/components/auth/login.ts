@@ -84,7 +84,7 @@ export class Login {
                     lastName: result.response.user.lastName
                 })
 
-                this.openNewRoute('/'); // перенаправляем на главную страницу
+                await this.openNewRoute('/'); // перенаправляем на главную страницу
             } catch (e) {
                 if (this.commonErrorElement) {
                     this.commonErrorElement.style.display = 'block';
