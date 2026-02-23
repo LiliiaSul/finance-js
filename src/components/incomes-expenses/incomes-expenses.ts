@@ -69,27 +69,27 @@ export class IncomesExpenses {
         dateTo.addEventListener('change', changeDate);
 
         this.todayElement.addEventListener('click', () => {
-            const today = new Date().toISOString().split('T')[0];
+            const today: string = new Date().toISOString().split('T')[0];
             dateFrom.value = today;
             dateTo.value = today;
             this.getIncomesExpenses({period: 'today'}).then();
         });
         this.weekElement.addEventListener('click', () => {
-            const week = new Date();
+            const week: Date = new Date();
             week.setDate(week.getDate() - 7);
             dateFrom.value = week.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
             this.getIncomesExpenses({period: 'week'}).then();
         });
         this.monthElement.addEventListener('click', () => {
-            const month = new Date();
+            const month: Date = new Date();
             month.setMonth(month.getMonth() - 1);
             dateFrom.value = month.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
             this.getIncomesExpenses({period: 'month'}).then();
         });
         this.yearElement.addEventListener('click', () => {
-            const year = new Date();
+            const year: Date = new Date();
             year.setFullYear(year.getFullYear() - 1);
             dateFrom.value = year.toISOString().split('T')[0];
             dateTo.value = new Date().toISOString().split('T')[0];
@@ -117,7 +117,7 @@ export class IncomesExpenses {
 
         const result = await HttpUtils.request<OperationsDataType[]>(`/operations?${paramsToString}`);
         if (result.redirect) {
-            this.openNewRoute(result.redirect);
+           await this.openNewRoute(result.redirect);
             return []; // Возвращаем пустой массив
         }
 
