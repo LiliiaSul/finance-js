@@ -5,7 +5,7 @@ import {HttpRequestResultType} from "../types/http-request-result.type";
 
 
 export class HttpUtils {
-   public static async request<T>(url: string, method: string = "GET", useAuth: boolean = true, body: any = null): Promise<HttpRequestResultType<T>> {
+    public static async request<T>(url: string, method: string = "GET", useAuth: boolean = true, body: any = null): Promise<HttpRequestResultType<T>> {
         const result: HttpRequestResultType<T> = { // объект результата запроса
             error: false,
         };
@@ -47,13 +47,13 @@ export class HttpUtils {
                     result.redirect = '/login'; // перенаправляем на страницу логина
                 } else {
                     //2 - токен истек/невалидный (надо обновить)
-                   const updateTokenResult: boolean = await AuthUtils.updateRefreshToken();
-                   if (updateTokenResult) {
-                       //повторяем запрос с новым токеном
-                       return this.request(url, method, useAuth, body);
-                   } else { //обновить токен не удалось
-                       result.redirect = '/login';
-                   }
+                    const updateTokenResult: boolean = await AuthUtils.updateRefreshToken();
+                    if (updateTokenResult) {
+                        //повторяем запрос с новым токеном
+                        return this.request(url, method, useAuth, body);
+                    } else { //обновить токен не удалось
+                        result.redirect = '/login';
+                    }
                 }
             }
         }

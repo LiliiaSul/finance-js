@@ -9,51 +9,76 @@ import {TokensType} from "../../types/tokens.type";
 
 export class Login {
     readonly openNewRoute: OpenNewRouteType;
-    readonly emailElement: HTMLInputElement | null;
-    readonly passwordElement: HTMLInputElement | null;
-    readonly rememberMeElement: HTMLInputElement | null;
-    readonly commonErrorElement: HTMLElement | null;
-    readonly togglePassword: HTMLElement | null;
+    readonly emailElement: HTMLInputElement;
+    readonly passwordElement: HTMLInputElement;
+    readonly rememberMeElement: HTMLInputElement;
+    readonly commonErrorElement: HTMLElement;
+    readonly togglePassword: HTMLElement;
     readonly validations: ValidatableElementType[] = [];
-    readonly submitButton: HTMLElement | null;
+    readonly submitButton: HTMLElement;
 
 
     constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.emailElement = document.getElementById('email') as HTMLInputElement;
-        this.passwordElement = document.getElementById('password') as HTMLInputElement;
-        this.rememberMeElement = document.getElementById('remember-me') as HTMLInputElement;
-        this.commonErrorElement = document.getElementById('common-error');
-        this.togglePassword = document.getElementById('togglePassword');
-        this.submitButton = document.getElementById('submit');
+        const emailElement = document.getElementById('email') as HTMLInputElement | null;
+        if (emailElement === null) {
+            throw new Error('Email элемент не найден');
+        }
+        this.emailElement = emailElement;
+
+        const passwordElement = document.getElementById('password') as HTMLInputElement | null;
+        if (passwordElement === null) {
+            throw new Error('Password элемент не найден');
+        }
+        this.passwordElement = passwordElement;
+
+        const rememberMeElement = document.getElementById('remember-me') as HTMLInputElement | null;
+        if (rememberMeElement === null) {
+            throw new Error('Remember Me элемент не найден');
+        }
+        this.rememberMeElement = rememberMeElement;
+
+        const commonErrorElement: HTMLElement | null = document.getElementById('common-error');
+        if (commonErrorElement === null) {
+            throw new Error('Common Error элемент не найден');
+        }
+        this.commonErrorElement = commonErrorElement;
+
+        const togglePassword: HTMLElement | null = document.getElementById('togglePassword');
+        if (togglePassword === null) {
+            throw new Error('Toggle Password элемент не найден');
+        }
+        this.togglePassword = togglePassword;
+
+        const submitButton: HTMLElement | null = document.getElementById('submit');
+        if (submitButton === null) {
+            throw new Error('Submit Button элемент не найден');
+        }
+        this.submitButton = submitButton;
 
         if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
-            this.openNewRoute('/');
+            this.openNewRoute('/').then();
             return;
         }
 
 
-        if (this.togglePassword) {
-            this.togglePassword.addEventListener('click', (e: PointerEvent): void => {
-                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
-            })
-        }
+        this.togglePassword.addEventListener('click', (e: PointerEvent): void => {
+            ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
+        })
 
         this.validations = [
             {element: this.emailElement, options: {pattern: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/}},
             {element: this.passwordElement}
         ];
 
-        if (this.submitButton) {
-            this.submitButton.addEventListener('click', this.login.bind(this));
-        }
+
+        this.submitButton.addEventListener('click', this.login.bind(this));
     }
 
 
     private async login(): Promise<void> {
-        if (this.commonErrorElement) {
-            this.commonErrorElement.style.display = 'none';
-        }
+        this.commonErrorElement.style.display = 'none';
+
         if (ValidationUtils.validateForm(this.validations)) {
             try {
                 // запрос отправляем
@@ -61,15 +86,13 @@ export class Login {
                     user: UserInfoType,
                     tokens: TokensType
                 }>('/login', 'POST', false, {
-                    email: (this.emailElement as HTMLInputElement).value,
-                    password: (this.passwordElement as HTMLInputElement).value,
+                    email: this.emailElement.value,
+                    password: this.passwordElement.value,
                     rememberMe: this.rememberMeElement ? this.rememberMeElement.checked : false
                 });
 
                 if (result.error || !result.response || (result.response && (!result.response.tokens || !result.response.user))) {
-                    if (this.commonErrorElement) {
-                        this.commonErrorElement.style.display = 'block';
-                    }
+                    this.commonErrorElement.style.display = 'block';
                     return;
                 }
 
@@ -86,9 +109,7 @@ export class Login {
 
                 await this.openNewRoute('/'); // перенаправляем на главную страницу
             } catch (e) {
-                if (this.commonErrorElement) {
-                    this.commonErrorElement.style.display = 'block';
-                }
+                this.commonErrorElement.style.display = 'block';
             }
         }
     }

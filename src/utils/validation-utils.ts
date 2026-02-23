@@ -15,7 +15,7 @@ export class ValidationUtils {
     }
 
 
-    private static validateField(element: HTMLInputElement | null, options?: ValidationOptionsType): boolean { //проверяем одно поле
+    private static validateField(element: HTMLInputElement | HTMLSelectElement | null, options?: ValidationOptionsType): boolean { //проверяем одно поле
         if (!element) return false; //если элемент не найден, считаем его невалидным
 
         let condition: boolean = element.value.trim().length > 0; //по умолчанию проверяем просто на заполненность

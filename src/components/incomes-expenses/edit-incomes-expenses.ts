@@ -1,25 +1,76 @@
 import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
+import {OpenNewRouteType} from "../../types/openNewRoute.type";
+import {ValidatableElementType} from "../../types/validatable.element.type";
+import {OperationsDataType} from "../../types/operations-data.type";
+import {GetCategoryType} from "../../types/get-category.type";
 
 export class EditIncomesExpenses {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteType;
+    readonly typeElement: HTMLSelectElement;
+    readonly categoryElement: HTMLSelectElement;
+    readonly amountElement: HTMLInputElement;
+    readonly dateElement: HTMLInputElement;
+    readonly commentElement: HTMLInputElement;
+    readonly updateButton: HTMLElement;
+    readonly cancelButton: HTMLElement;
+    private operationOriginalData: OperationsDataType | undefined; //оригинальные данные операции, которые были получены с сервера
+    readonly validations: ValidatableElementType[] = [];
+
+    constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.typeElement = document.getElementById('type');
-        this.categoryElement = document.getElementById('category');
-        this.amountElement = document.getElementById('amount');
-        this.dateElement = document.getElementById('date');
-        this.commentElement = document.getElementById('comment');
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-        if (!id) {
-            return this.openNewRoute('/');
+        const typeElement = document.getElementById('type') as HTMLSelectElement | null;
+        if (typeElement === null) {
+            throw new Error('Type Element не найден');
         }
+        this.typeElement = typeElement;
 
-        document.getElementById('update').addEventListener('click', this.updateOperation.bind(this));
-        document.getElementById('cancel').addEventListener('click', () => {
-            this.openNewRoute('/incomes-expenses');
+        const categoryElement = document.getElementById('category') as HTMLSelectElement | null;
+        if (categoryElement === null) {
+            throw new Error('Category Element не найден');
+        }
+        this.categoryElement = categoryElement;
+
+        const amountElement = document.getElementById('amount') as HTMLInputElement | null;
+        if (amountElement === null) {
+            throw new Error('Amount Element не найден');
+        }
+        this.amountElement = amountElement;
+
+        const dateElement = document.getElementById('date') as HTMLInputElement | null;
+        if (dateElement === null) {
+            throw new Error('Date Element не найден');
+        }
+        this.dateElement = dateElement;
+
+        const commentElement = document.getElementById('comment') as HTMLInputElement | null;
+        if (commentElement === null) {
+            throw new Error('Comment Element не найден');
+        }
+        this.commentElement = commentElement;
+
+        const updateButton: HTMLElement | null = document.getElementById('update');
+        if (updateButton === null) {
+            throw new Error('Update Button не найден');
+        }
+        this.updateButton = updateButton;
+        this.updateButton.addEventListener('click', this.updateOperation.bind(this));
+
+        const cancelButton: HTMLElement | null = document.getElementById('cancel');
+        if (cancelButton === null) {
+            throw new Error('Cancel Button не найден');
+        }
+        this.cancelButton = cancelButton;
+        this.cancelButton.addEventListener('click', () => {
+            this.openNewRoute('/incomes-expenses').then();
         });
+
+        const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+        const id: string | null = urlParams.get('id');
+        if (!id) {
+            this.openNewRoute('/').then();
+            return;
+        }
 
         this.validations = [
             {element: this.typeElement},
@@ -29,16 +80,16 @@ export class EditIncomesExpenses {
             {element: this.commentElement}
         ];
 
-        this.getOperation(id).then();
+        this.getOperation(parseInt(id)).then();
     }
 
-    async getOperation(id) { //Получение операции по id
-        const result = await HttpUtils.request('/operations/' + id);
+    async getOperation(id: number) { //Получение операции по id
+        const result = await HttpUtils.request<OperationsDataType>('/operations/' + id);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
 
-        if (result.error || !result.response || (result.response && result.response.error)) {
+        if (result.error || !result.response || (result.response && result.error)) {
             return alert('Возникла ошибка при получении операции. Обратитесь в поддержку.');
         }
 
@@ -46,17 +97,21 @@ export class EditIncomesExpenses {
         await this.showOperation(result.response);
     }
 
-    async showOperation(operation) { //Отображение операции в форме
+    async showOperation(operation: OperationsDataType) { //Отображение операции в форме
         this.typeElement.value = operation.type;
 
         await this.chooseCategory(operation.type);
 
         this.categoryElement.value = operation.category;
-        this.amountElement.value = operation.amount;
+        this.amountElement.value = String(operation.amount);
         this.dateElement.value = operation.date.split('T')[0];
         this.commentElement.value = operation.comment || '';
 
         for (let i = 0; i < this.categoryElement.options.length; i++) { //ищем категорию, которая совпадает с названием категории операции
+            if (this.operationOriginalData === undefined) {
+                break;
+            }
+
             if (this.categoryElement.options[i].innerText === operation.category) {
                 this.categoryElement.selectedIndex = i;
                 this.operationOriginalData.category_id = parseInt(this.categoryElement.options[i].value);
@@ -65,36 +120,44 @@ export class EditIncomesExpenses {
         }
     }
 
-    async chooseCategory(type) { //Выбор категории в зависимости от типа операции
+    async chooseCategory(type: string) { //Выбор категории в зависимости от типа операции
         if (!type) {
             return;
         }
 
-        const url = type === 'income' ? '/categories/income' : '/categories/expense';
-        const result = await HttpUtils.request(url);
+        const url: string = type === 'income' ? '/categories/income' : '/categories/expense';
+        const result = await HttpUtils.request<GetCategoryType[]>(url);
         if (result.redirect) {
             return this.openNewRoute(result.redirect);
         }
 
-        if (result.error || !result.response || (result.response && result.response.error)) {
+        if (result.error || !result.response || (result.response && result.error)) {
             return alert('Во время получения категорий произошла ошибка');
         }
 
         result.response.forEach(category => { //добавляем категории в выпадающий список
-            const optionValueElement = document.createElement('option');
-            optionValueElement.value = category.id;
+            const optionValueElement: HTMLOptionElement = document.createElement('option');
+            optionValueElement.value = String(category.id);
             optionValueElement.innerText = category.title;
             this.categoryElement.appendChild(optionValueElement);
         });
     }
 
-    async updateOperation(e) {
+    async updateOperation(e: Event) {
         e.preventDefault(); //останавливаем отправку формы
         if (ValidationUtils.validateForm(this.validations)) {
-            const changedData = {}; //данные, которые были изменены
+            const changedData: Partial<OperationsDataType> = {}; //данные, которые были изменены
+            if (this.operationOriginalData === undefined) {
+                throw new Error('Оригинальные данные операции не были загружены');
+            }
 
             if (this.typeElement.value !== this.operationOriginalData.type) {
-                changedData.type = this.typeElement.value;
+                const type: string = this.typeElement.value; //проверяем, что тип операции является допустимым
+                if (type === 'income' || type === 'expense') {
+                    changedData.type = type;
+                } else {
+                   throw new Error('Недопустимое значение типа операции');
+                }
             }
 
             if (this.categoryElement.innerText !== this.operationOriginalData.category) {

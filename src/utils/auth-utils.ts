@@ -11,7 +11,7 @@ export class AuthUtils {
         localStorage.setItem(this.tokensKey, JSON.stringify(tokens));
     }
 
-    public static getTokens(key: string | null): string | TokensType | null { // Получаем токены из localStorage. Если ключ не указан, возвращаем весь объект токенов, иначе возвращаем только указанный токен (accessToken или refreshToken)
+    public static getTokens(key: keyof TokensType | null): string | TokensType | null { // Если ключ не указан, возвращаем весь объект токенов, иначе возвращаем только указанный токен
         const tokens: string | null = localStorage.getItem(this.tokensKey);
 
         if (!tokens) {
@@ -19,7 +19,7 @@ export class AuthUtils {
         }
 
         try {
-            const parsedTokens = JSON.parse(tokens);
+            const parsedTokens: TokensType = JSON.parse(tokens);
             if (key && parsedTokens.hasOwnProperty(key)) {
                 return parsedTokens[key];
             }

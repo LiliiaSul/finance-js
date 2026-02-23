@@ -2,30 +2,40 @@ import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {OpenNewRouteType} from "../../types/openNewRoute.type";
 import {ValidatableElementType} from "../../types/validatable.element.type";
+import {GetCategoryType} from "../../types/get-category.type";
 
 export class CreateExpenses {
     readonly openNewRoute: OpenNewRouteType;
-    readonly expensesTitleElement: HTMLInputElement | null;
-    readonly createButton: HTMLElement | null;
-    readonly cancelButton: HTMLElement | null;
+    readonly expensesTitleElement: HTMLInputElement;
+    readonly createButton: HTMLElement;
+    readonly cancelButton: HTMLElement;
     readonly validations: ValidatableElementType[] = [];
 
     constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.createButton = document.getElementById('create');
-        this.cancelButton = document.getElementById('cancel');
-        this.expensesTitleElement = document.getElementById('expenses-title') as HTMLInputElement;
-
-
-        if (this.createButton) {
-            this.createButton.addEventListener('click', this.createExpenses.bind(this));
+        const createButton: HTMLElement | null = document.getElementById('create');
+        if (createButton === null) {
+            throw new Error('Кнопка создания категории расходов не найдена');
         }
-        if (this.cancelButton) {
-            this.cancelButton.addEventListener('click', () => {
-                this.openNewRoute('/expenses').then();
-            });
-        }
+        this.createButton = createButton;
 
+        const cancelButton: HTMLElement | null = document.getElementById('cancel');
+        if (cancelButton === null) {
+            throw new Error('Кнопка отмены создания категории расходов не найдена');
+        }
+        this.cancelButton = cancelButton;
+
+        const expensesTitleElement = document.getElementById('expenses-title') as HTMLInputElement | null;
+        if (expensesTitleElement === null) {
+            throw new Error('Поле для ввода названия категории расходов не найдена');
+        }
+        this.expensesTitleElement = expensesTitleElement;
+
+
+        this.createButton.addEventListener('click', this.createExpenses.bind(this));
+        this.cancelButton.addEventListener('click', () => {
+            this.openNewRoute('/expenses').then();
+        });
 
         this.validations = [
             {element: this.expensesTitleElement}
@@ -35,8 +45,8 @@ export class CreateExpenses {
     private async createExpenses(e: Event): Promise<void> {
         e.preventDefault(); //останавливаем отправку формы
         if (ValidationUtils.validateForm(this.validations)) {
-            const result = await HttpUtils.request('/categories/expense', 'POST', true, {
-                title: (this.expensesTitleElement as HTMLInputElement).value
+            const result = await HttpUtils.request<void>('/categories/expense', 'POST', true, {
+                title: this.expensesTitleElement.value
             });
             if (result.redirect) {
                 return this.openNewRoute(result.redirect);

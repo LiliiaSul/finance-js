@@ -3,45 +3,91 @@ import {HttpUtils} from "../../utils/http-utils";
 import {ValidationUtils} from "../../utils/validation-utils";
 import {ToggleUtils} from "../../utils/toggle-utils";
 import {OpenNewRouteType} from "../../types/openNewRoute.type";
-import {ValidatableElementType, ValidationOptionsType} from "../../types/validatable.element.type";
 import {UserInfoType} from "../../types/user-info.type";
+import {ValidatableElementType} from "../../types/validatable.element.type";
 
 export class SignUp {
     readonly openNewRoute: OpenNewRouteType;
-    readonly nameElement: HTMLInputElement | null;
-    readonly lastNameElement: HTMLInputElement | null;
-    readonly emailElement: HTMLInputElement | null;
-    readonly passwordElement: HTMLInputElement | null;
-    readonly passwordRepeatElement: HTMLInputElement | null;
-    readonly rememberMeElement: HTMLInputElement | null;
-    readonly commonErrorElement: HTMLElement | null;
-    readonly togglePassword: HTMLElement | null;
-    readonly toggleRepeatPassword: HTMLElement | null;
+    readonly nameElement: HTMLInputElement;
+    readonly lastNameElement: HTMLInputElement;
+    readonly emailElement: HTMLInputElement;
+    readonly passwordElement: HTMLInputElement;
+    readonly passwordRepeatElement: HTMLInputElement;
+    readonly rememberMeElement: HTMLInputElement;
+    readonly commonErrorElement: HTMLElement;
+    readonly togglePassword: HTMLElement;
+    readonly toggleRepeatPassword: HTMLElement;
     readonly validations: ValidatableElementType[] = [];
-    readonly submitButton: HTMLElement | null;
+    readonly submitButton: HTMLElement;
 
     constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
-        this.nameElement = document.getElementById('name') as HTMLInputElement;
-        this.lastNameElement = document.getElementById('last-name') as HTMLInputElement;
-        this.emailElement = document.getElementById('email') as HTMLInputElement;
-        this.passwordElement = document.getElementById('password') as HTMLInputElement;
-        this.passwordRepeatElement = document.getElementById('password-repeat') as HTMLInputElement;
-        this.rememberMeElement = document.getElementById('remember-me') as HTMLInputElement;
-        this.commonErrorElement = document.getElementById('common-error');
-        this.togglePassword = document.getElementById('togglePassword');
-        this.toggleRepeatPassword = document.getElementById('toggleRepeatPassword');
-        this.submitButton = document.getElementById('submit');
+        const nameElement = document.getElementById('name') as HTMLInputElement | null;
+        if (nameElement === null) {
+            throw new Error('Name элемент не найден');
+        }
+        this.nameElement = nameElement;
 
+        const lastNameElement = document.getElementById('last-name') as HTMLInputElement | null;
+        if (lastNameElement === null) {
+            throw new Error('Last Name элемент не найден');
+        }
+        this.lastNameElement = lastNameElement;
+
+        const emailElement = document.getElementById('email') as HTMLInputElement | null;
+        if (emailElement === null) {
+            throw new Error('Email элемент не найден');
+        }
+        this.emailElement = emailElement;
+
+        const passwordElement = document.getElementById('password') as HTMLInputElement | null;
+        if (passwordElement === null) {
+            throw new Error('Password элемент не найден');
+        }
+        this.passwordElement = passwordElement;
+
+        const passwordRepeatElement = document.getElementById('password-repeat') as HTMLInputElement | null;
+        if (passwordRepeatElement === null) {
+            throw new Error('Password Repeat элемент не найден');
+        }
+        this.passwordRepeatElement = passwordRepeatElement;
+
+        const rememberMeElement = document.getElementById('remember-me') as HTMLInputElement | null;
+        if (rememberMeElement === null) {
+            throw new Error('Remember Me элемент не найден');
+        }
+        this.rememberMeElement = rememberMeElement;
+
+        const commonErrorElement: HTMLElement | null = document.getElementById('common-error');
+        if (commonErrorElement === null) {
+            throw new Error('Common Error элемент не найден');
+        }
+        this.commonErrorElement = commonErrorElement;
+
+        const togglePassword: HTMLElement | null = document.getElementById('togglePassword');
+        if (togglePassword === null) {
+            throw new Error('Toggle Password элемент не найден');
+        }
+        this.togglePassword = togglePassword;
+
+        const toggleRepeatPassword: HTMLElement | null = document.getElementById('toggleRepeatPassword');
+        if (toggleRepeatPassword === null) {
+            throw new Error('Toggle Repeat Password элемент не найден');
+        }
+        this.toggleRepeatPassword = toggleRepeatPassword;
+
+        const submitButton: HTMLElement | null = document.getElementById('submit');
+        if (submitButton === null) {
+            throw new Error('Submit Button элемент не найден');
+        }
+        this.submitButton = submitButton;
 
         if (AuthUtils.getTokens('accessToken')) { // Если есть токен, перенаправляем на главную страницу
             this.openNewRoute('/').then();
             return;
         }
 
-        if (this.submitButton) {
-            this.submitButton.addEventListener('click', this.signUp.bind(this));
-        }
+        this.submitButton.addEventListener('click', this.signUp.bind(this));
 
         this.validations = [
             {element: this.nameElement, options: {pattern: /^[А-Я][а-я]+\s*$/}},
@@ -51,58 +97,48 @@ export class SignUp {
             {element: this.passwordRepeatElement, options: {compareTo: this.passwordElement.value}}
         ];
 
-        if (this.togglePassword) {
-            this.togglePassword.addEventListener('click', (e) => {
-                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
-            })
-        }
+        this.togglePassword.addEventListener('click', (e) => {
+            ToggleUtils.toggleSwitch(this.passwordElement, e);
+        })
 
-        if (this.toggleRepeatPassword) {
-            this.toggleRepeatPassword.addEventListener('click', (e) => {
-                ToggleUtils.toggleSwitch((this.passwordElement as HTMLInputElement), e);
-            })
-        }
+        this.toggleRepeatPassword.addEventListener('click', (e) => {
+            ToggleUtils.toggleSwitch(this.passwordElement, e);
+        })
     }
 
-
     private async signUp(): Promise<void> {
-        if (this.commonErrorElement) {
-            this.commonErrorElement.style.display = 'none';
-        }
+        this.commonErrorElement.style.display = 'none';
 
-        for (let i = 0; i < this.validations.length; i++) { // обновляем значение для сравнения паролей
-            if (this.validations[i].element === this.passwordRepeatElement) {
-                (this.validations[i].options as ValidationOptionsType).compareTo = (this.passwordElement as HTMLInputElement).value;
+        for (const validation of this.validations) { // обновляем значение для сравнения паролей
+            if (validation.element === this.passwordRepeatElement && validation.options) {
+                validation.options.compareTo = this.passwordElement.value;
             }
-        }
-        if (ValidationUtils.validateForm(this.validations)) {
-            try {
-                const result = await HttpUtils.request<{ user: UserInfoType }>('/signup', 'POST', false, {
-                    name: (this.nameElement as HTMLInputElement).value,
-                    lastName: (this.lastNameElement as HTMLInputElement).value,
-                    email: (this.emailElement as HTMLInputElement).value,
-                    password: (this.passwordElement as HTMLInputElement).value,
-                    passwordRepeat: (this.passwordRepeatElement as HTMLInputElement).value
-                });
 
-                if (result.error || !result.response || (result.response && !result.response.user)) {
-                    if (this.commonErrorElement) {
+            if (ValidationUtils.validateForm(this.validations)) {
+                try {
+                    const result = await HttpUtils.request<{ user: UserInfoType }>('/signup', 'POST', false, {
+                        name: this.nameElement.value,
+                        lastName: this.lastNameElement.value,
+                        email: this.emailElement.value,
+                        password: this.passwordElement.value,
+                        passwordRepeat: this.passwordRepeatElement.value
+                    });
+
+                    if (result.error || !result.response || (result.response && !result.response.user)) {
                         this.commonErrorElement.style.display = 'block';
+                        return;
                     }
-                    return;
-                }
 
-                // сохраняем пользователя
-                AuthUtils.setUser({
-                    id: result.response.user.id,
-                    email: result.response.user.email,
-                    name: result.response.user.name,
-                    lastName: result.response.user.lastName
-                });
+                    // сохраняем пользователя
+                    AuthUtils.setUser({
+                        id: result.response.user.id,
+                        email: result.response.user.email,
+                        name: result.response.user.name,
+                        lastName: result.response.user.lastName
+                    });
 
-                await this.openNewRoute('/');
-            } catch (e) {
-                if (this.commonErrorElement) {
+                    await this.openNewRoute('/');
+                } catch (e) {
                     this.commonErrorElement.style.display = 'block';
                 }
             }
