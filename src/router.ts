@@ -19,17 +19,37 @@ import {BalanceType} from "./types/balance.type";
 import {UserInfoType} from "./types/user-info.type";
 
 export class Router {
-    readonly titlePageElement: HTMLElement | null;
-    readonly contentPageElement: HTMLElement | null;
-    readonly balanceElement: HTMLElement | null;
-    readonly userNameElement: HTMLElement | null;
+    readonly titlePageElement: HTMLElement;
+    readonly contentPageElement: HTMLElement;
+    // readonly balanceElement: HTMLElement;
+    // readonly userNameElement: HTMLElement;
     private routes: RouteType[];
 
     constructor() {
-        this.titlePageElement = document.getElementById('title');
-        this.contentPageElement = document.getElementById('content');
-        this.balanceElement = document.getElementById('balance');
-        this.userNameElement = document.getElementById('user-name');
+        const titlePageElement: HTMLElement | null = document.getElementById('title');
+        if (titlePageElement === null) {
+            throw new Error('Title элемент не найден');
+        }
+        this.titlePageElement = titlePageElement;
+
+        const contentPageElement: HTMLElement | null = document.getElementById('content');
+        if (contentPageElement === null) {
+            throw new Error('Content элемент не найден');
+        }
+        this.contentPageElement = contentPageElement;
+
+        // const balanceElement: HTMLElement | null = document.getElementById('balance');
+        // if (balanceElement === null) {
+        //     throw new Error("Balance элемент не найден");
+        // }
+        // this.balanceElement = balanceElement;
+        //
+        // const userNameElement: HTMLElement | null = document.getElementById('user-name');
+        // if (userNameElement === null) {
+        //     throw new Error("User Name элемент не найден");
+        // }
+        // this.userNameElement = userNameElement;
+
 
         this.initEvents();
         this.routes = [
@@ -190,38 +210,38 @@ export class Router {
 
         if (currentRoute) {
             if (currentRoute.title) {
-                if (this.titlePageElement) {
-                    this.titlePageElement.innerText = currentRoute.title;
-                }
+                this.titlePageElement.innerText = currentRoute.title;
             }
 
             if (currentRoute.template) { //если есть шаблон
                 let contentBlock: HTMLElement | null = this.contentPageElement;
 
-                if (currentRoute.useLayout) { //если есть layout
-                    if (this.contentPageElement) { //загружаем layout в content
-                        this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout as string).then(response => response.text());
-                        contentBlock = document.getElementById('content-layout');
-                    }
+                if (currentRoute.useLayout) { //если есть layout, загружаем его и вставляем в content, а уже в нем ищем блок для вставки шаблона страницы
+                    this.contentPageElement.innerHTML = await fetch(currentRoute.useLayout as string).then(response => response.text());
+                    contentBlock = document.getElementById('content-layout');
 
-                    if (this.balanceElement) {
+                    const balanceElement: HTMLElement | null = document.getElementById('balance');
+                    if (balanceElement) {
                         const balanceData = await this.getBalance();
                         if (balanceData && typeof balanceData.balance !== 'undefined') {
-                            this.balanceElement.innerText = balanceData.balance + '$';
+                            balanceElement.innerText = balanceData.balance + '$';
                         } else {
                             // если не удалось получить баланс пользователя, очищаем поле баланса
-                            this.balanceElement.innerText = '';
+                            balanceElement.innerText = '';
                         }
                     }
 
-                    const userInfo: UserInfoType | null = AuthUtils.getUser();
-                    if (this.userNameElement && userInfo) {
-                        this.userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
+                    const userNameElement: HTMLElement | null = document.getElementById('user-name');
+                    if (userNameElement) {
+                        const userInfo: UserInfoType | null = AuthUtils.getUser();
+                        if (userNameElement && userInfo) {
+                            userNameElement.innerText = userInfo.name + ' ' + userInfo.lastName;
+                        }
                     }
 
                     this.activateMenuItem(currentRoute); //активируем пункт меню
                 }
-                if (contentBlock) {
+                if (contentBlock) { //вставляем шаблон страницы в content
                     contentBlock.innerHTML = await fetch(currentRoute.template).then(response => response.text());
                 }
             }
@@ -230,9 +250,7 @@ export class Router {
                 currentRoute.load();
             }
         } else {
-            if (this.contentPageElement) {
-                this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
-            }
+            this.contentPageElement.innerHTML = '<h1 class="text-center mt-5">Страница не найдена!</h1>';
         }
     }
 

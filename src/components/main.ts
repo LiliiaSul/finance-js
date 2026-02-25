@@ -104,8 +104,8 @@ export class Main {
             this.getIncomesExpenses({period: 'year'}).then();
         });
         this.allElement.addEventListener('click', () => {
-            this.getIncomesExpenses({period: 'all'}).then(date => { // Получаем все даты из данных о доходах и расходах
-                const allDates = date.map(item => new Date(item.date));
+            this.getIncomesExpenses({period: 'all'}).then(data => { // Получаем все даты из данных о доходах и расходах
+                const allDates = data.map(item => new Date(item.date));
                 const minDate = new Date(Math.min(...allDates.map(d => d.getTime())));
                 const maxDate = new Date(Math.max(...allDates.map(d => d.getTime())));
                 dateFrom.value = minDate.toISOString().split('T')[0];

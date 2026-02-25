@@ -96,8 +96,8 @@ export class IncomesExpenses {
             this.getIncomesExpenses({period: 'year'}).then();
         });
         this.allElement.addEventListener('click', () => {
-            this.getIncomesExpenses({period: 'all'}).then(date => {
-                const allDates: Date[] = date.map(item => new Date(item.date));
+            this.getIncomesExpenses({period: 'all'}).then(data => {
+                const allDates: Date[] = data.map(item => new Date(item.date));
                 const minDate = new Date(Math.min(...allDates.map(d => d.getTime())));
                 const maxDate = new Date(Math.max(...allDates.map(d => d.getTime())));
                 dateFrom.value = minDate.toISOString().split('T')[0];
