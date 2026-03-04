@@ -13,7 +13,6 @@ export class SignUp {
     readonly emailElement: HTMLInputElement;
     readonly passwordElement: HTMLInputElement;
     readonly passwordRepeatElement: HTMLInputElement;
-    readonly rememberMeElement: HTMLInputElement;
     readonly commonErrorElement: HTMLElement;
     readonly togglePassword: HTMLElement;
     readonly toggleRepeatPassword: HTMLElement;
@@ -51,12 +50,6 @@ export class SignUp {
             throw new Error('Password Repeat элемент не найден');
         }
         this.passwordRepeatElement = passwordRepeatElement;
-
-        const rememberMeElement = document.getElementById('remember-me') as HTMLInputElement | null;
-        if (rememberMeElement === null) {
-            throw new Error('Remember Me элемент не найден');
-        }
-        this.rememberMeElement = rememberMeElement;
 
         const commonErrorElement: HTMLElement | null = document.getElementById('common-error');
         if (commonErrorElement === null) {
