@@ -1,18 +1,22 @@
 import {AuthUtils} from "../../utils/auth-utils";
 import {HttpUtils} from "../../utils/http-utils";
+import {OpenNewRouteType} from "../../types/openNewRoute.type";
 
 export class Logout {
-    constructor(openNewRoute) {
+    readonly openNewRoute: OpenNewRouteType;
+
+    constructor(openNewRoute: OpenNewRouteType) {
         this.openNewRoute = openNewRoute;
 
         if (!AuthUtils.getTokens('accessToken') || !AuthUtils.getTokens('refreshToken')) { // Если нет токенов, перенаправляем на страницу логина
-            return this.openNewRoute('/login');
+            this.openNewRoute('/login').then();
+            return;
         }
 
         this.logout().then();
     }
 
-    async logout() {
+    private async logout(): Promise<void> {
         await HttpUtils.request('/logout', 'POST', false, {
             refreshToken: AuthUtils.getTokens('refreshToken')
         });
@@ -21,6 +25,6 @@ export class Logout {
         AuthUtils.removeTokens();
         AuthUtils.removeUser();
 
-        this.openNewRoute('/login'); // перенаправляем на страницу логина
+        await this.openNewRoute('/login'); // перенаправляем на страницу логина
     }
 }

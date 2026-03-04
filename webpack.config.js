@@ -3,8 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    entry: './src/app.js',
+    entry: './src/app.ts',
     mode: 'development',
+    devtool: 'inline-source-map',
     output: {
         filename: 'app.js',
         path: path.resolve(__dirname, 'dist'),
@@ -21,38 +22,38 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(scss)$/,
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.(scss|sass)$/,
                 use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    },
+                    'style-loader',
+                    'css-loader',
                     {
                         loader: 'postcss-loader',
                         options: {
                             postcssOptions: {
-                                plugins: () => [
-                                    require('autoprefixer')
-                                ]
-                            }
-                        }
+                                plugins: ['autoprefixer'],
+                            },
+                        },
                     },
                     {
                         loader: 'sass-loader',
                         options: {
                             sassOptions: {
-                                // 1. Скрываем предупреждения от Bootstrap (из node_modules)
                                 quietDeps: true,
-                                // 2. Оставляем только актуальные флаги подавления (удаляем mixed-decls)
                                 silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
-                            }
-                        }
-                    }
-                ]
-            }
-        ]
+                            },
+                        },
+                    },
+                ],
+            },
+        ],
+    },
+    resolve: {
+        extensions: [".tsx", ".ts", ".js"],
     },
     plugins: [
         new HtmlWebpackPlugin({
